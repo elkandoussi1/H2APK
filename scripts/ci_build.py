@@ -10,6 +10,7 @@
 كل مجلد داخل apps/ تطبيق مستقل:
     index.html   الصفحة الرئيسية (إلزامي)
     app.json     الإعدادات (اختياري): الاسم، المعرّف، الإصدار، الألوان، شاشة البداية…
+                 وإذا احتوى على "url" صار التطبيق غلافاً لذلك الموقع ولا يلزم index.html
     icon.png     أيقونة التطبيق (اختياري، يفضّل 512×512)
     splash.png   صورة شاشة البداية (اختياري)
     أي ملفات أخرى (css، js، صور، صفحات) تُضاف إلى التطبيق بمساراتها نفسها.
@@ -69,19 +70,26 @@ def request_for_dir(app_dir):
     if (app_dir / 'app.json').exists():
         cfg = json.loads((app_dir / 'app.json').read_text(encoding='utf-8'))
     main_html = app_dir / cfg.pop('html_file', 'index.html')
-    if not main_html.exists():
-        raise SystemExit(f'✗ لا يوجد {main_html.name} في {app_dir}')
+    is_url = bool(str(cfg.get('url', '')).strip())
+    if not is_url and not main_html.exists():
+        raise SystemExit(f'✗ لا يوجد {main_html.name} ولا رابط url في {app_dir}')
     req = dict(DEFAULTS)
     req['app_name'] = app_dir.name
     req['package_name'] = 'com.elkandoussi.' + slug(app_dir.name)
+    if is_url:
+        req.update({'block_ads': True, 'pull_refresh': True})
     req.update(cfg)
-    req['html'] = main_html.read_text(encoding='utf-8')
+    if is_url:
+        req['url'] = str(cfg['url']).strip()
+        req.pop('html', None)
+    else:
+        req['html'] = main_html.read_text(encoding='utf-8')
     if (app_dir / 'icon.png').exists():
         req['icon'] = b64(app_dir / 'icon.png')
     if req.get('splash_enabled') and (app_dir / 'splash.png').exists() and not req.get('splash_use_icon'):
         req['splash_image'] = b64(app_dir / 'splash.png')
     assets = {}
-    for f in sorted(app_dir.rglob('*')):
+    for f in ([] if is_url else sorted(app_dir.rglob('*'))):
         rel = f.relative_to(app_dir).as_posix()
         if f.is_file() and f != main_html and rel not in SPECIAL and not rel.startswith('.'):
             assets[rel] = b64(f)

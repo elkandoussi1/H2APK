@@ -28,7 +28,6 @@ QWEN.md
 Thumbs.db
 
 # Docs
-docs/
 .qwen/
 testweb/
 # H2APK builds (elkandoussi)
@@ -36,3 +35,4 @@ dist/
 server.log
 tools/bin/
 .env
+__pycache__/

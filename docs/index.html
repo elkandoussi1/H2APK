@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#110D1D">
+<title>مصنع التطبيقات — H2APK</title>
+<meta name="description" content="حوّل أي كود HTML أو موقع إلى تطبيق أندرويد APK بضغطة زر، عبر GitHub Actions.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=El+Messiri:wght@600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+[data-theme="dark"]{color-scheme:dark;--bg:#110D1D;--s1:#1A1530;--s2:#1F1937;--s3:#262042;--sheet:#17122A;--line:rgba(237,235,247,.08);--line2:rgba(237,235,247,.14);--text:#EDEBF7;--muted:#A39DBF;--soft:#CFCAE6;--faint:#8D86AB;--track:#332B52;--dim:rgba(6,4,12,.66);--ok:#6FE3B8;--warn:#F2C35B;--bad:#FF9F9F;--acc:#B7A6FF;--acc-ink:#17112B;--acc-text:#B7A6FF;--shadow:0 18px 40px -16px rgba(0,0,0,.8)}
+[data-theme="light"]{color-scheme:light;--bg:#F5F3FB;--s1:#FFFFFF;--s2:#F7F5FC;--s3:#EEEAF8;--sheet:#FFFFFF;--line:rgba(23,17,43,.09);--line2:rgba(23,17,43,.16);--text:#17112B;--muted:#5E5878;--soft:#3A3456;--faint:#6E6889;--track:#D9D3EC;--dim:rgba(23,17,43,.4);--ok:#08734F;--warn:#8F5A00;--bad:#C42B3A;--acc:#5B46D6;--acc-ink:#FFFFFF;--acc-text:#5B46D6;--shadow:0 18px 40px -18px rgba(23,17,43,.35)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Cairo',system-ui,-apple-system,'Segoe UI',Tahoma,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.6}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none;padding:0}
+a{color:var(--acc-text)}
+img{display:block}
+[hidden]{display:none!important}
+img[src=""],img:not([src]){visibility:hidden}
+h1,h2,h3,p{margin:0}
+.hf{font-family:'El Messiri','Cairo',serif}
+.mono{font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace}
+.i3d{flex-shrink:0;pointer-events:none;user-select:none}
+:focus-visible{outline:2px solid var(--acc-text);outline-offset:2px}
+.press{transition:transform .12s ease-out}.press:active{transform:scale(.96)}
+
+.wrap{max-width:760px;margin:0 auto;padding:calc(18px + env(safe-area-inset-top)) 18px calc(40px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:16px}
+.top{position:relative;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.top .brand{display:flex;align-items:center;gap:12px;flex:1;min-width:220px}
+.top h1{font-size:26px;line-height:1.2}
+.top p{font-size:13px;color:var(--muted)}
+.glow{position:absolute;top:-120px;right:-60px;width:420px;height:300px;border-radius:50%;background:radial-gradient(closest-side,color-mix(in srgb,var(--acc) 22%,transparent),transparent);pointer-events:none;z-index:-1}
+.conn{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border-radius:14px;background:var(--s1);border:1px solid var(--line2);font-size:13px;font-weight:700;color:var(--soft)}
+.conn .dot{width:9px;height:9px;border-radius:50%;background:var(--bad)}
+.conn.on .dot{background:#4FD1A1;box-shadow:0 0 0 4px color-mix(in srgb,#4FD1A1 20%,transparent)}
+.iconbtn{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:var(--s1);border:1px solid var(--line2);color:var(--soft)}
+.iconbtn svg{width:19px;height:19px}
+
+.card{background:var(--s1);border:1px solid var(--line);border-radius:24px;padding:16px}
+.step>h2{display:flex;align-items:center;gap:10px;margin-bottom:14px;font-size:17px;font-weight:800}
+.step>h2 .n{font-size:12px;font-weight:800;padding:1px 9px;border-radius:8px;background:color-mix(in srgb,var(--acc) 18%,transparent);color:var(--acc-text)}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:560px){.grid2{grid-template-columns:minmax(0,1fr)}}
+.lbl{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;font-size:13px;font-weight:700;color:var(--soft)}
+.lbl small{font-size:11.5px;font-weight:600;color:var(--muted)}
+.inp{width:100%;height:50px;padding:0 14px;border-radius:15px;background:var(--s2);border:1px solid var(--line2);color:var(--text);font-size:16px;outline:none;transition:border-color .15s ease,box-shadow .15s ease}
+.inp:focus{border-color:var(--acc-text);box-shadow:0 0 0 4px color-mix(in srgb,var(--acc) 16%,transparent)}
+.inp::placeholder{color:var(--faint)}
+.inp.ltr{direction:ltr;text-align:left}
+.inp.bad{border-color:color-mix(in srgb,#FF7A7A 60%,transparent)}
+.hint{margin-top:5px;font-size:12px;color:var(--muted);line-height:1.6}
+.hint.bad{color:var(--bad)}
+textarea.code{width:100%;min-height:300px;padding:14px;border-radius:16px;background:#0C0916;border:1px solid var(--line2);color:#E7E3F7;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:13.5px;line-height:1.65;direction:ltr;text-align:left;resize:vertical;outline:none;tab-size:2}
+[data-theme="light"] textarea.code{background:#FBFAFF;color:#17112B}
+textarea.code:focus{border-color:var(--acc-text)}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.tbtn{display:flex;align-items:center;gap:7px;min-height:44px;padding:0 13px;border-radius:13px;background:var(--s3);border:1px solid var(--line);font-size:13px;font-weight:700;color:var(--soft)}
+.tbtn svg{width:17px;height:17px}
+.seg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;padding:4px;border-radius:15px;background:var(--s2);border:1px solid var(--line);margin-bottom:14px}
+.seg button{min-height:46px;border-radius:11px;font-size:14px;font-weight:700;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:8px}
+.seg button[aria-checked="true"]{background:var(--acc);color:var(--acc-ink);box-shadow:inset 0 1px 0 rgba(255,255,255,.45)}
+.seg.small button{min-height:42px;font-size:13px}
+.files{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.file{display:flex;align-items:center;gap:10px;min-height:44px;padding:4px 6px 4px 12px;border-radius:13px;background:var(--s2);border:1px solid var(--line);font-size:13px}
+.file .p{flex:1;min-width:0;direction:ltr;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.file .s{color:var(--muted);font-size:12px;white-space:nowrap}
+.file .tag{font-size:11px;font-weight:700;padding:0 7px;border-radius:7px;background:color-mix(in srgb,var(--acc) 15%,transparent);color:var(--acc-text)}
+.rm{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;color:var(--bad)}
+.rm svg{width:16px;height:16px}
+.row{display:flex;align-items:center;gap:12px;padding:10px 4px}
+.row+.row{border-top:1px solid var(--line)}
+.row .txt{flex:1;min-width:0}
+.row .t{font-size:14.5px;font-weight:700}
+.row .d{font-size:12px;color:var(--muted);line-height:1.6}
+.sw{flex-shrink:0;width:52px;height:44px;display:grid;place-items:center}
+.sw span{position:relative;display:block;width:48px;height:28px;border-radius:999px;background:var(--track);transition:background-color .2s ease}
+.sw span::after{content:"";position:absolute;top:3px;right:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.35);transition:transform .2s cubic-bezier(.23,1,.32,1)}
+.sw[aria-checked="true"] span{background:var(--acc)}
+.sw[aria-checked="true"] span::after{transform:translateX(-20px)}
+.iconbox{display:flex;align-items:center;gap:14px;padding:12px;border-radius:18px;background:var(--s2);border:1px solid var(--line)}
+.iconbox .prev{width:76px;height:76px;border-radius:22px;overflow:hidden;flex-shrink:0;background:var(--s3);box-shadow:0 12px 24px -12px rgba(0,0,0,.6)}
+.iconbox .prev img{width:100%;height:100%;object-fit:cover}
+.iconbox .acts{display:flex;flex-wrap:wrap;gap:8px}
+.colorrow{display:flex;gap:8px}
+.colorrow input[type=color]{width:56px;height:50px;padding:4px;border-radius:15px;border:1px solid var(--line2);background:var(--s2);cursor:pointer;flex-shrink:0}
+.range{width:100%;height:30px;accent-color:var(--acc);cursor:pointer}
+.sub{margin-top:8px;padding:12px;border-radius:18px;background:var(--s2);border:1px solid var(--line);display:flex;flex-direction:column;gap:12px}
+details.adv{margin-top:6px}
+details.adv summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-size:13.5px;font-weight:700;color:var(--acc-text)}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:58px;padding:0 20px;border-radius:19px;font-size:17px;font-weight:800;text-decoration:none;transition:transform .12s ease-out}
+.btn:active{transform:scale(.98)}
+.btn svg{width:21px;height:21px}
+.btn-primary{background:var(--acc);color:var(--acc-ink);box-shadow:inset 0 2px 0 rgba(255,255,255,.45),inset 0 -4px 0 rgba(23,17,43,.16),0 16px 34px -14px var(--acc)}
+.btn-ghost{background:var(--s3);border:1px solid var(--line2);color:var(--text);font-size:15px;font-weight:700;min-height:50px}
+.btn-ok{background:#4FD1A1;color:#0D2A20;box-shadow:inset 0 2px 0 rgba(255,255,255,.45),inset 0 -4px 0 rgba(0,0,0,.12)}
+.btn[disabled]{opacity:.55;pointer-events:none}
+.gen-note{text-align:center;font-size:12.5px;color:var(--muted);margin-top:-6px}
+
+.prog h2{display:flex;align-items:center;gap:10px;font-size:17px;font-weight:800;margin-bottom:10px}
+.prog h2 .tm{margin-inline-start:auto;font-size:12.5px;font-weight:700;color:var(--muted)}
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.steps li{display:flex;align-items:center;gap:10px;min-height:38px;font-size:14px;color:var(--muted)}
+.steps li .st{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;flex-shrink:0;border:2px solid var(--track)}
+.steps li .st svg{width:13px;height:13px}
+.steps li.run{color:var(--text);font-weight:700}
+.steps li.run .st{border-color:var(--acc);border-top-color:transparent;animation:spin .8s linear infinite}
+.steps li.done{color:var(--soft)}
+.steps li.done .st{background:#4FD1A1;border-color:#4FD1A1;color:#0D2A20}
+.steps li.fail{color:var(--bad);font-weight:700}
+.steps li.fail .st{background:#FF8A8A;border-color:#FF8A8A;color:#2A0B0B}
+.steps li.skip{opacity:.5}
+@keyframes spin{to{transform:rotate(360deg)}}
+.result{margin-top:14px;display:flex;flex-direction:column;gap:10px}
+.result .ok{display:flex;align-items:center;gap:12px;padding:12px;border-radius:18px;background:color-mix(in srgb,#4FD1A1 9%,transparent);border:1px solid color-mix(in srgb,#4FD1A1 28%,transparent)}
+.result .err{display:flex;align-items:center;gap:12px;padding:12px;border-radius:18px;background:color-mix(in srgb,#FF7A7A 9%,transparent);border:1px solid color-mix(in srgb,#FF7A7A 28%,transparent);color:var(--bad);font-size:14px;line-height:1.7}
+.linkrow{display:flex;gap:8px;flex-wrap:wrap}
+.linkrow .tbtn{flex:1;justify-content:center;text-decoration:none}
+
+.apps{display:flex;flex-direction:column;gap:8px}
+.app{display:flex;align-items:center;gap:12px;padding:8px 8px 8px 12px;border-radius:18px;background:var(--s2);border:1px solid var(--line)}
+.app .ic{width:48px;height:48px;border-radius:14px;overflow:hidden;flex-shrink:0;background:var(--s3)}
+.app .ic img{width:100%;height:100%;object-fit:cover}
+.app .txt{flex:1;min-width:0}
+.app .t{font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.app .d{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.app .acts{display:flex;gap:6px}
+.app .tbtn{min-height:42px;padding:0 11px;text-decoration:none}
+.empty{text-align:center;padding:18px;font-size:14px;color:var(--muted)}
+.foot{text-align:center;font-size:12px;line-height:1.9;color:var(--faint)}
+
+.modal{position:fixed;inset:0;z-index:100;display:none;align-items:flex-end;justify-content:center;background:var(--dim)}
+.modal.open{display:flex;animation:fade .3s cubic-bezier(.23,1,.32,1)}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.sheet{width:100%;max-width:600px;max-height:94dvh;display:flex;flex-direction:column;background:var(--sheet);border-top:1px solid var(--line2);border-radius:28px 28px 0 0;box-shadow:0 -20px 60px rgba(0,0,0,.45);padding-bottom:env(safe-area-inset-bottom);animation:up .3s cubic-bezier(.23,1,.32,1)}
+@keyframes up{from{transform:translateY(48px);opacity:.4}to{transform:none;opacity:1}}
+@media (min-width:660px){.modal{align-items:center;padding:20px}.sheet{border-radius:26px;border:1px solid var(--line2)}}
+.sheet-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 18px 8px 12px}
+.sheet-head h2{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:800}
+.sheet-body{flex:1;min-height:0;overflow-y:auto;padding:6px 18px 18px;display:flex;flex-direction:column;gap:14px}
+.sheet-foot{display:flex;gap:10px;padding:12px 18px 18px;border-top:1px solid var(--line)}
+.guide{margin:0;padding-inline-start:20px;display:flex;flex-direction:column;gap:6px;font-size:13.5px;line-height:1.75;color:var(--soft)}
+.guide b{color:var(--text)}
+.warnbox{display:flex;gap:10px;align-items:flex-start;padding:11px 13px;border-radius:15px;font-size:12.5px;line-height:1.7;background:color-mix(in srgb,#F2C35B 9%,transparent);border:1px solid color-mix(in srgb,#F2C35B 26%,transparent);color:var(--warn)}
+.preview-frame{width:100%;height:70dvh;border:0;border-radius:16px;background:#fff}
+#toast{position:fixed;z-index:300;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translate(-50%,16px) scale(.96);opacity:0;pointer-events:none;max-width:90vw;width:max-content;display:flex;align-items:center;gap:10px;padding:11px 16px;border-radius:16px;background:var(--sheet);border:1px solid var(--line2);box-shadow:var(--shadow);font-size:14px;font-weight:700;transition:opacity .22s cubic-bezier(.23,1,.32,1),transform .22s cubic-bezier(.23,1,.32,1)}
+#toast.show{opacity:1;transform:translate(-50%,0) scale(1)}
+#toast.success{color:var(--ok);border-color:color-mix(in srgb,#4FD1A1 45%,transparent)}
+#toast.error{color:var(--bad);border-color:color-mix(in srgb,#FF7A7A 45%,transparent)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="glow" aria-hidden="true"></div>
+    <div class="brand">
+      <img class="i3d" data-ico="appbuild" width="58" height="58" alt="">
+      <div><h1 class="hf">مصنع التطبيقات</h1><p>حوّل أي كود أو موقع إلى تطبيق أندرويد · <span dir="ltr">H2APK</span></p></div>
+    </div>
+    <button class="conn press" type="button" id="btnConn"><span class="dot" aria-hidden="true"></span><span id="connText">ربط حساب GitHub</span></button>
+    <button class="iconbtn press" type="button" id="btnTheme" aria-label="تبديل المظهر"></button>
+  </header>
+
+  <!-- 1. المصدر -->
+  <section class="card step" aria-labelledby="h1">
+    <h2 id="h1"><img class="i3d" data-ico="dev" width="34" height="34" alt=""><span class="n">1</span>مصدر التطبيق</h2>
+    <div class="seg" role="radiogroup" aria-label="نوع المصدر" id="modeSeg">
+      <button type="button" role="radio" data-mode="code" aria-checked="true"><img class="i3d" data-ico="dev" width="24" height="24" alt="">كود HTML</button>
+      <button type="button" role="radio" data-mode="url" aria-checked="false"><img class="i3d" data-ico="globe" width="24" height="24" alt="">رابط موقع</button>
+    </div>
+    <div id="srcCode">
+      <div class="toolbar">
+        <button class="tbtn press" type="button" id="btnOpenHtml"></button>
+        <button class="tbtn press" type="button" id="btnOpenFolder"></button>
+        <button class="tbtn press" type="button" id="btnPreview"></button>
+      </div>
+      <label class="lbl" for="code"><span>الكود (الصفحة الرئيسية index.html)</span><small id="codeInfo"></small></label>
+      <textarea class="code" id="code" spellcheck="false" autocomplete="off" placeholder="<!DOCTYPE html>&#10;<html lang=&quot;ar&quot; dir=&quot;rtl&quot;>&#10;  ...&#10;</html>"></textarea>
+      <div class="files" id="extraFiles"></div>
+      <div class="toolbar" style="margin:10px 0 0"><button class="tbtn press" type="button" id="btnAddFiles"></button></div>
+      <p class="hint">ملفات CSS وJS والصور تُضاف بمساراتها نفسها، فتعمل روابطها النسبية داخل التطبيق.</p>
+    </div>
+    <div id="srcUrl" hidden>
+      <label class="lbl" for="url"><span>رابط الموقع</span></label>
+      <input class="inp ltr" type="url" id="url" placeholder="https://example.com" autocomplete="off" inputmode="url">
+      <p class="hint" id="urlHint">يُفتح الموقع داخل التطبيق كأنه تطبيق مستقل.</p>
+      <div style="margin-top:8px">
+        <div class="row"><div class="txt"><div class="t" id="l_ads">حجب الإعلانات والمتتبّعات</div><div class="d">قائمة بأكثر من 50 نطاقاً إعلانياً</div></div><button class="sw" type="button" role="switch" data-key="block_ads" aria-checked="true" aria-labelledby="l_ads"><span></span></button></div>
+        <div class="row"><div class="txt"><div class="t" id="l_dns">حجب إضافي عبر AdGuard</div><div class="d">أكثر من 150 نطاقاً إضافياً</div></div><button class="sw" type="button" role="switch" data-key="adguard_dns" aria-checked="false" aria-labelledby="l_dns"><span></span></button></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. الهوية -->
+  <section class="card step" aria-labelledby="h2">
+    <h2 id="h2"><img class="i3d" data-ico="layers" width="34" height="34" alt=""><span class="n">2</span>هوية التطبيق</h2>
+    <div class="grid2">
+      <div><label class="lbl" for="appName"><span>اسم التطبيق *</span></label><input class="inp" type="text" id="appName" placeholder="مثال: خزنتي" maxlength="40"></div>
+      <div><label class="lbl" for="pkg"><span>المعرّف (Package)</span><small>لا تغيّره بعد النشر</small></label><input class="inp ltr mono" type="text" id="pkg" placeholder="com.elkandoussi.myapp" spellcheck="false" autocomplete="off" style="font-size:14px"><p class="hint" id="pkgHint"></p></div>
+      <div><label class="lbl" for="ver"><span>الإصدار</span></label><input class="inp ltr" type="text" id="ver" value="1.0"></div>
+      <div><label class="lbl" for="verCode"><span>رقم البناء</span><small>يزيد تلقائياً عند كل تحديث</small></label><input class="inp ltr" type="number" id="verCode" min="1" value="1"></div>
+    </div>
+    <div style="margin-top:14px">
+      <div class="lbl"><span>الأيقونة</span><small>PNG أو JPG أو SVG · تُحوَّل إلى 512×512</small></div>
+      <div class="iconbox">
+        <div class="prev"><img id="iconPrev" alt="معاينة الأيقونة"></div>
+        <div style="flex:1;min-width:0">
+          <div class="acts">
+            <button class="tbtn press" type="button" id="btnIcon"></button>
+            <button class="tbtn press" type="button" id="btnIconAuto"></button>
+          </div>
+          <p class="hint" id="iconHint">أيقونة مولّدة من اسم التطبيق ولونه.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. المظهر -->
+  <section class="card step" aria-labelledby="h3">
+    <h2 id="h3"><img class="i3d" data-ico="palette" width="34" height="34" alt=""><span class="n">3</span>المظهر وشاشة البداية</h2>
+    <label class="lbl" for="themeHex"><span>لون التطبيق (شريط الحالة)</span></label>
+    <div class="colorrow"><input type="color" id="themeColor" value="#110D1D" aria-label="اختيار اللون"><input class="inp ltr mono" type="text" id="themeHex" value="#110D1D" maxlength="7" spellcheck="false"></div>
+    <div style="margin-top:6px">
+      <div class="row"><div class="txt"><div class="t" id="l_nav">شريط تنقّل شفاف</div><div class="d">يمتد التطبيق خلف أزرار الهاتف السفلية</div></div><button class="sw" type="button" role="switch" data-key="transparent_nav" aria-checked="false" aria-labelledby="l_nav"><span></span></button></div>
+      <div class="row"><div class="txt"><div class="t" id="l_splash">شاشة البداية</div><div class="d">تظهر لحظة فتح التطبيق</div></div><button class="sw" type="button" role="switch" data-key="splash_enabled" aria-checked="true" aria-labelledby="l_splash"><span></span></button></div>
+    </div>
+    <div class="sub" id="splashBox">
+      <div><label class="lbl" for="splashHex"><span>لون خلفية شاشة البداية</span></label>
+        <div class="colorrow"><input type="color" id="splashColor" value="#110D1D" aria-label="اختيار لون شاشة البداية"><input class="inp ltr mono" type="text" id="splashHex" value="#110D1D" maxlength="7" spellcheck="false"></div></div>
+      <div><div class="lbl"><span>صورة شاشة البداية</span></div>
+        <div class="seg small" role="radiogroup" aria-label="صورة شاشة البداية" id="splashSeg" style="margin-bottom:8px">
+          <button type="button" role="radio" data-splash="icon" aria-checked="true">أيقونة التطبيق</button>
+          <button type="button" role="radio" data-splash="custom" aria-checked="false">صورة أخرى</button>
+        </div>
+        <div id="splashCustom" hidden class="iconbox"><div class="prev" style="background:var(--s3)"><img id="splashPrev" alt="معاينة صورة البداية" style="object-fit:contain"></div><button class="tbtn press" type="button" id="btnSplash"></button></div>
+      </div>
+      <div class="grid2">
+        <div><div class="lbl"><label for="splashDur">المدة</label><small id="splashDurV" class="mono">1.2 ث</small></div><input class="range" type="range" id="splashDur" min="500" max="5000" step="100" value="1200"></div>
+        <div><div class="lbl"><label for="splashSize">حجم الصورة</label><small id="splashSizeV" class="mono">40%</small></div><input class="range" type="range" id="splashSize" min="15" max="90" step="1" value="40"></div>
+      </div>
+      <div><div class="lbl"><span>الحركة</span></div>
+        <div class="seg small" role="radiogroup" aria-label="حركة شاشة البداية" id="animSeg" style="margin:0">
+          <button type="button" role="radio" data-anim="fade" aria-checked="true">تلاشٍ</button>
+          <button type="button" role="radio" data-anim="slide" aria-checked="false">انزلاق</button>
+        </div></div>
+    </div>
+  </section>
+
+  <!-- 4. الخيارات -->
+  <section class="card step" aria-labelledby="h4">
+    <h2 id="h4"><img class="i3d" data-ico="gear" width="34" height="34" alt=""><span class="n">4</span>خيارات التطبيق</h2>
+    <div class="row"><div class="txt"><div class="t" id="l_sb">إخفاء أشرطة التمرير</div><div class="d">مظهر أنظف يشبه التطبيقات الأصلية</div></div><button class="sw" type="button" role="switch" data-key="hide_scrollbars" aria-checked="true" aria-labelledby="l_sb"><span></span></button></div>
+    <div class="row"><div class="txt"><div class="t" id="l_zoom">التكبير بإصبعين</div><div class="d">يسمح بتكبير الصفحة باللمس</div></div><button class="sw" type="button" role="switch" data-key="zoom_enabled" aria-checked="false" aria-labelledby="l_zoom"><span></span></button></div>
+    <div class="row"><div class="txt"><div class="t" id="l_pr">السحب للتحديث</div><div class="d">إعادة تحميل الصفحة بالسحب لأسفل</div></div><button class="sw" type="button" role="switch" data-key="pull_refresh" aria-checked="false" aria-labelledby="l_pr"><span></span></button></div>
+    <div class="row"><div class="txt"><div class="t" id="l_copy">منع نسخ النصوص</div><div class="d">يعطّل الضغط المطوّل لتحديد النص</div></div><button class="sw" type="button" role="switch" data-key="disable_copy_text" aria-checked="false" aria-labelledby="l_copy"><span></span></button></div>
+    <details class="adv">
+      <summary>إعدادات متقدمة</summary>
+      <div class="grid2" style="margin-top:6px">
+        <div><label class="lbl" for="minSdk"><span>أقل إصدار أندرويد</span></label>
+          <select class="inp" id="minSdk"><option value="21" selected>أندرويد 5.0 (21)</option><option value="24">أندرويد 7.0 (24)</option><option value="26">أندرويد 8.0 (26)</option><option value="29">أندرويد 10 (29)</option></select></div>
+        <div><label class="lbl" for="targetSdk"><span>الإصدار المستهدف</span></label>
+          <select class="inp" id="targetSdk"><option value="34" selected>أندرويد 14 (34)</option><option value="35">أندرويد 15 (35)</option><option value="33">أندرويد 13 (33)</option></select></div>
+      </div>
+      <p class="hint" id="slugHint"></p>
+    </details>
+  </section>
+
+  <button class="btn btn-primary press" type="button" id="btnGenerate"></button>
+  <p class="gen-note">يُرفع التطبيق إلى مستودعك على GitHub ويُبنى هناك، ثم يظهر رابط التحميل هنا خلال دقيقة تقريباً.</p>
+
+  <section class="card prog" id="progress" hidden aria-live="polite">
+    <h2><img class="i3d" data-ico="clock" width="32" height="32" alt=""><span id="progTitle">جارٍ التوليد</span><span class="tm mono" id="progTime">0:00</span></h2>
+    <ol class="steps" id="steps"></ol>
+    <div class="result" id="result"></div>
+  </section>
+
+  <section class="card step" aria-labelledby="h5">
+    <h2 id="h5"><img class="i3d" data-ico="folder" width="34" height="34" alt="">تطبيقاتي<span style="margin-inline-start:auto;display:flex;gap:8px"><button class="tbtn press" type="button" id="btnNew"></button><button class="iconbtn press" type="button" id="btnReload" aria-label="تحديث القائمة"></button></span></h2>
+    <div class="apps" id="apps"><p class="empty">اربط حسابك على GitHub لعرض تطبيقاتك.</p></div>
+  </section>
+
+  <p class="foot">مبني على مشروع <a href="https://github.com/HashShin/H2APK" target="_blank" rel="noopener">H2APK</a> (رخصة MIT) · نسخة <a id="repoLink" href="https://github.com/elkandoussi1/H2APK" target="_blank" rel="noopener">elkandoussi1/H2APK</a><br>الكود والإعدادات تذهب مباشرة من متصفحك إلى مستودعك؛ لا خادم وسيط.</p>
+</div>
+
+<!-- الربط بـ GitHub -->
+<div class="modal" id="modalToken">
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="tkTitle">
+    <div class="sheet-head"><h2 id="tkTitle"><img class="i3d" data-ico="padlock" width="30" height="30" alt="">الربط بحساب GitHub</h2><button class="iconbtn press" type="button" data-close aria-label="إغلاق"></button></div>
+    <div class="sheet-body">
+      <ol class="guide">
+        <li>افتح <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">إنشاء رمز وصول دقيق (Fine-grained token)</a>.</li>
+        <li>في <b>Repository access</b> اختر <b>Only select repositories</b> ثم مستودع <b dir="ltr" id="tkRepoName">H2APK</b> وحده.</li>
+        <li>في <b>Permissions</b> اجعل <b dir="ltr">Contents</b>: <b dir="ltr">Read and write</b>، و<b dir="ltr">Actions</b>: <b dir="ltr">Read-only</b>.</li>
+        <li>اضغط <b dir="ltr">Generate token</b> وانسخ الرمز والصقه هنا.</li>
+      </ol>
+      <div class="grid2">
+        <div><label class="lbl" for="tkOwner"><span>صاحب المستودع</span></label><input class="inp ltr" type="text" id="tkOwner" spellcheck="false"></div>
+        <div><label class="lbl" for="tkRepo"><span>المستودع</span></label><input class="inp ltr" type="text" id="tkRepo" spellcheck="false"></div>
+      </div>
+      <div><label class="lbl" for="tkToken"><span>رمز الوصول</span></label><input class="inp ltr mono" type="password" id="tkToken" placeholder="github_pat_…" autocomplete="off" spellcheck="false" style="font-size:14px"><p class="hint" id="tkStatus"></p></div>
+      <div class="row" style="padding:0"><div class="txt"><div class="t" id="l_rem">تذكّر الرمز على هذا الجهاز</div><div class="d">وإلا يُنسى عند إغلاق المتصفح</div></div><button class="sw" type="button" role="switch" id="tkRemember" aria-checked="false" aria-labelledby="l_rem"><span></span></button></div>
+      <div class="warnbox"><img class="i3d" data-ico="warning" width="26" height="26" alt=""><span>الرمز يبقى في متصفحك فقط ويُرسل إلى GitHub وحده. لا تستعمل التذكّر على جهاز مشترك، واحصر الرمز في مستودع H2APK كما في الخطوات.</span></div>
+    </div>
+    <div class="sheet-foot"><button class="btn btn-ghost" type="button" id="tkForget" style="flex:1">نسيان الرمز</button><button class="btn btn-primary" type="button" id="tkSave" style="flex:1.6;min-height:50px;font-size:15.5px">تحقّق واحفظ</button></div>
+  </div>
+</div>
+
+<!-- المعاينة -->
+<div class="modal" id="modalPreview">
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="pvTitle" style="max-width:480px">
+    <div class="sheet-head"><h2 id="pvTitle">معاينة الكود</h2><button class="iconbtn press" type="button" data-close aria-label="إغلاق"></button></div>
+    <div class="sheet-body"><iframe class="preview-frame" id="previewFrame" title="معاينة" sandbox="allow-scripts allow-forms allow-modals"></iframe><p class="hint">معاينة تقريبية: الملفات الإضافية والتخزين لا تعمل هنا كما في التطبيق.</p></div>
+  </div>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+<input type="file" id="fHtml" accept=".html,.htm,text/html" hidden>
+<input type="file" id="fFolder" webkitdirectory directory multiple hidden>
+<input type="file" id="fFiles" multiple hidden>
+<input type="file" id="fIcon" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden>
+<input type="file" id="fSplash" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden>
+
+<script>
+window.H2_ICONS = {
+  "appbuild": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128' width='128' height='128'%3E%3Cdefs%3E%3Cfilter id='blur' x='-50%25' y='-50%25' width='200%25' height='200%25'%3E%3CfeGaussianBlur stdDeviation='3.6'/%3E%3C/filter%3E%3ClinearGradient id='f1' gradientUnits='userSpaceOnUse' x1='43.2' y1='6.0' x2='82.8' y2='106.0'%3E%3Cstop offset='0' stop-color='%23958cd9'/%3E%3Cstop offset='.48' stop-color='%235A4BC4'/%3E%3Cstop offset='1' stop-color='%235042ac'/%3E%3C/linearGradient%3E%3CclipPath id='c2'%3E%3Crect x='30' y='6' width='66' height='100' rx='16'/%3E%3C/clipPath%3E%3CradialGradient id='s3'%3E%3Cstop offset='0' stop-color='%233a2e7a' stop-opacity='.5'/%3E%3Cstop offset='1' stop-color='%233a2e7a' stop-opacity='0'/%3E%3C/radialGradient%3E%3CradialGradient id='g4'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.66'/%3E%3Cstop offset='.5' stop-color='%23fff' stop-opacity='.2'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/radialGradient%3E%3ClinearGradient id='r5' gradientUnits='userSpaceOnUse' x1='0' y1='6.0' x2='0' y2='66.0'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.75'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/linearGradient%3E%3ClinearGradient id='f6' gradientUnits='userSpaceOnUse' x1='46.8' y1='14.0' x2='79.2' y2='92.0'%3E%3Cstop offset='0' stop-color='%236f6b80'/%3E%3Cstop offset='.48' stop-color='%231E1838'/%3E%3Cstop offset='1' stop-color='%231d1737'/%3E%3C/linearGradient%3E%3ClinearGradient id='f7' gradientUnits='userSpaceOnUse' x1='43.4' y1='22.0' x2='50.6' y2='34.0'%3E%3Cstop offset='0' stop-color='%23b5a9f7'/%3E%3Cstop offset='.48' stop-color='%238B78F2'/%3E%3Cstop offset='1' stop-color='%237967d3'/%3E%3C/linearGradient%3E%3CclipPath id='c8'%3E%3Crect x='41' y='22' width='12' height='12' rx='3.5'/%3E%3C/clipPath%3E%3CradialGradient id='g9'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.66'/%3E%3Cstop offset='.5' stop-color='%23fff' stop-opacity='.2'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/radialGradient%3E%3ClinearGradient id='f10' gradientUnits='userSpaceOnUse' x1='59.4' y1='22.0' x2='66.6' y2='34.0'%3E%3Cstop offset='0' stop-color='%2379d9c6'/%3E%3Cstop offset='.48' stop-color='%232EC4A6'/%3E%3Cstop offset='1' stop-color='%232ba793'/%3E%3C/linearGradient%3E%3CclipPath id='c11'%3E%3Crect x='57' y='22' width='12' height='12' rx='3.5'/%3E%3C/clipPath%3E%3CradialGradient id='g12'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.66'/%3E%3Cstop offset='.5' stop-color='%23fff' stop-opacity='.2'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/radialGradient%3E%3ClinearGradient id='f13' gradientUnits='userSpaceOnUse' x1='75.4' y1='22.0' x2='82.6' y2='34.0'%3E%3Cstop offset='0' stop-color='%23f7d28c'/%3E%3Cstop offset='.48' stop-color='%23F2B84B'/%3E%3Cstop offset='1' stop-color='%23cf9d47'/%3E%3C/linearGradient%3E%3CclipPath id='c14'%3E%3Crect x='73' y='22' width='12' height='12' rx='3.5'/%3E%3C/clipPath%3E%3CradialGradient id='g15'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.66'/%3E%3Cstop offset='.5' stop-color='%23fff' stop-opacity='.2'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/radialGradient%3E%3ClinearGradient id='f16' gradientUnits='userSpaceOnUse' x1='43.4' y1='38.0' x2='50.6' y2='50.0'%3E%3Cstop offset='0' stop-color='%23f7a2a2'/%3E%3Cstop offset='.48' stop-color='%23F26D6D'/%3E%3Cstop offset='1' stop-color='%23cf5e63'/%3E%3C/linearGradient%3E%3CclipPath id='c17'%3E%3Crect x='41' y='38' width='12' height='12' rx='3.5'/%3E%3C/clipPath%3E%3CradialGradient id='g18'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.66'/%3E%3Cstop offset='.5' stop-color='%23fff' stop-opacity='.2'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/radialGradient%3E%3ClinearGradient id='f19' gradientUnits='userSpaceOnUse' x1='59.4' y1='38.0' x2='66.6' y2='50.0'%3E%3Cstop offset='0' stop-color='%238bc6f7'/%3E%3Cstop offset='.48' stop-color='%234AA6F2'/%3E%3Cstop offset='1' stop-color='%23428ed3'/%3E%3C/linearGradient%3E%3CclipPath id='c20'%3E%3Crect x='57' y='38' width='12' height='12' rx='3.5'/%3E%3C/clipPath%3E%3CradialGradient id='g21'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.66'/%3E%3Cstop offset='.5' stop-color='%23fff' stop-opacity='.2'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/radialGradient%3E%3ClinearGradient id='f22' gradientUnits='userSpaceOnUse' x1='75.4' y1='38.0' x2='82.6' y2='50.0'%3E%3Cstop offset='0' stop-color='%23f4a3ce'/%3E%3Cstop offset='.48' stop-color='%23EE6FB2'/%3E%3Cstop offset='1' stop-color='%23cc609d'/%3E%3C/linearGradient%3E%3CclipPath id='c23'%3E%3Crect x='73' y='38' width='12' height='12' rx='3.5'/%3E%3C/clipPath%3E%3CradialGradient id='g24'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.66'/%3E%3Cstop offset='.5' stop-color='%23fff' stop-opacity='.2'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/radialGradient%3E%3ClinearGradient id='f25' gradientUnits='userSpaceOnUse' x1='78.0' y1='66.0' x2='102.0' y2='106.0'%3E%3Cstop offset='0' stop-color='%2384d6ad'/%3E%3Cstop offset='.48' stop-color='%233FBF7F'/%3E%3Cstop offset='1' stop-color='%2339a372'/%3E%3C/linearGradient%3E%3CclipPath id='c26'%3E%3Ccircle cx='90' cy='86' r='20'/%3E%3C/clipPath%3E%3CradialGradient id='s27'%3E%3Cstop offset='0' stop-color='%232c6858' stop-opacity='.5'/%3E%3Cstop offset='1' stop-color='%232c6858' stop-opacity='0'/%3E%3C/radialGradient%3E%3CradialGradient id='g28'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.66'/%3E%3Cstop offset='.5' stop-color='%23fff' stop-opacity='.2'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/radialGradient%3E%3ClinearGradient id='r29' gradientUnits='userSpaceOnUse' x1='0' y1='66.0' x2='0' y2='90.0'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.75'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cellipse cx='64' cy='115' rx='36' ry='6' fill='%2307040d' opacity='0.55' filter='url(%23blur)'/%3E%3Cg fill='%23362a71' transform='translate(0 7)'%3E%3Crect x='30' y='6' width='66' height='100' rx='16'/%3E%3C/g%3E%3Cg fill='%23382c77' transform='translate(0 6)'%3E%3Crect x='30' y='6' width='66' height='100' rx='16'/%3E%3C/g%3E%3Cg fill='%233b2e7c' transform='translate(0 5)'%3E%3Crect x='30' y='6' width='66' height='100' rx='16'/%3E%3C/g%3E%3Cg fill='%233d3082' transform='translate(0 4)'%3E%3Crect x='30' y='6' width='66' height='100' rx='16'/%3E%3C/g%3E%3Cg fill='%23403387' transform='translate(0 3)'%3E%3Crect x='30' y='6' width='66' height='100' rx='16'/%3E%3C/g%3E%3Cg fill='%2342358d' transform='translate(0 2)'%3E%3Crect x='30' y='6' width='66' height='100' rx='16'/%3E%3C/g%3E%3Cg fill='%23453792' transform='translate(0 1)'%3E%3Crect x='30' y='6' width='66' height='100' rx='16'/%3E%3C/g%3E%3Cg fill='url(%23f1)'%3E%3Crect x='30' y='6' width='66' height='100' rx='16'/%3E%3C/g%3E%3Cg clip-path='url(%23c2)'%3E%3Cellipse cx='82.8' cy='106.0' rx='40.9' ry='42.0' fill='url(%23s3)'/%3E%3Cellipse cx='52.4' cy='21.0' rx='33.0' ry='36.0' fill='url(%23g4)'/%3E%3Cg fill='none' stroke='url(%23r5)' stroke-width='2.6'%3E%3Crect x='30' y='6' width='66' height='100' rx='16'/%3E%3C/g%3E%3C/g%3E%3Cg fill='url(%23f6)'%3E%3Crect x='36' y='14' width='54' height='78' rx='9'/%3E%3C/g%3E%3Cg fill='%234c3e85' transform='translate(0 1)'%3E%3Crect x='41' y='22' width='12' height='12' rx='3.5'/%3E%3C/g%3E%3Cg fill='url(%23f7)'%3E%3Crect x='41' y='22' width='12' height='12' rx='3.5'/%3E%3C/g%3E%3Cg clip-path='url(%23c8)'%3E%3Cellipse cx='45.1' cy='23.8' rx='6.0' ry='4.3' fill='url(%23g9)'/%3E%3C/g%3E%3Cg fill='%23235f64' transform='translate(0 1)'%3E%3Crect x='57' y='22' width='12' height='12' rx='3.5'/%3E%3C/g%3E%3Cg fill='url(%23f10)'%3E%3Crect x='57' y='22' width='12' height='12' rx='3.5'/%3E%3C/g%3E%3Cg clip-path='url(%23c11)'%3E%3Cellipse cx='61.1' cy='23.8' rx='6.0' ry='4.3' fill='url(%23g12)'/%3E%3C/g%3E%3Cg fill='%23795a3c' transform='translate(0 1)'%3E%3Crect x='73' y='22' width='12' height='12' rx='3.5'/%3E%3C/g%3E%3Cg fill='url(%23f13)'%3E%3Crect x='73' y='22' width='12' height='12' rx='3.5'/%3E%3C/g%3E%3Cg clip-path='url(%23c14)'%3E%3Cellipse cx='77.1' cy='23.8' rx='6.0' ry='4.3' fill='url(%23g15)'/%3E%3C/g%3E%3Cg fill='%2379394b' transform='translate(0 1)'%3E%3Crect x='41' y='38' width='12' height='12' rx='3.5'/%3E%3C/g%3E%3Cg fill='url(%23f16)'%3E%3Crect x='41' y='38' width='12' height='12' rx='3.5'/%3E%3C/g%3E%3Cg clip-path='url(%23c17)'%3E%3Cellipse cx='45.1' cy='39.8' rx='6.0' ry='4.3' fill='url(%23g18)'/%3E%3C/g%3E%3Cg fill='%232f5285' transform='translate(0 1)'%3E%3Crect x='57' y='38' width='12' height='12' rx='3.5'/%3E%3C/g%3E%3Cg fill='url(%23f19)'%3E%3Crect x='57' y='38' width='12' height='12' rx='3.5'/%3E%3C/g%3E%3Cg clip-path='url(%23c20)'%3E%3Cellipse cx='61.1' cy='39.8' rx='6.0' ry='4.3' fill='url(%23g21)'/%3E%3C/g%3E%3Cg fill='%23773a69' transform='translate(0 1)'%3E%3Crect x='73' y='38' width='12' height='12' rx='3.5'/%3E%3C/g%3E%3Cg fill='url(%23f22)'%3E%3Crect x='73' y='38' width='12' height='12' rx='3.5'/%3E%3C/g%3E%3Cg clip-path='url(%23c23)'%3E%3Cellipse cx='77.1' cy='39.8' rx='6.0' ry='4.3' fill='url(%23g24)'/%3E%3C/g%3E%3Cg fill='%23B9B2D6' opacity='1'%3E%3Crect x='53' y='97' width='20' height='3' rx='1.5'/%3E%3C/g%3E%3Cg fill='%232a5d53' transform='translate(0 4)'%3E%3Ccircle cx='90' cy='86' r='20'/%3E%3C/g%3E%3Cg fill='%232c6858' transform='translate(0 3)'%3E%3Ccircle cx='90' cy='86' r='20'/%3E%3C/g%3E%3Cg fill='%232f745d' transform='translate(0 2)'%3E%3Ccircle cx='90' cy='86' r='20'/%3E%3C/g%3E%3Cg fill='%23327f62' transform='translate(0 1)'%3E%3Ccircle cx='90' cy='86' r='20'/%3E%3C/g%3E%3Cg fill='url(%23f25)'%3E%3Ccircle cx='90' cy='86' r='20'/%3E%3C/g%3E%3Cg clip-path='url(%23c26)'%3E%3Cellipse cx='102.0' cy='106.0' rx='24.8' ry='16.8' fill='url(%23s27)'/%3E%3Cellipse cx='83.6' cy='72.0' rx='20.0' ry='14.4' fill='url(%23g28)'/%3E%3Cg fill='none' stroke='url(%23r29)' stroke-width='2.6'%3E%3Ccircle cx='90' cy='86' r='20'/%3E%3C/g%3E%3C/g%3E%3Cg fill='none' stroke-linecap='round' stroke-linejoin='round' stroke-width='5.5' stroke='%237f798b' transform='translate(0 1)'%3E%3Cpath d='M90 74 V96'/%3E%3Cpath d='M81 88 L90 97 L99 88'/%3E%3C/g%3E%3Cg fill='none' stroke-linecap='round' stroke-linejoin='round' stroke-width='5.5' stroke='%23ffffff'%3E%3Cpath d='M90 74 V96'/%3E%3Cpath d='M81 88 L90 97 L99 88'/%3E%3C/g%3E%3C/svg%3E",
+  "dev": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128' width='128' height='128'%3E%3Cdefs%3E%3Cfilter id='blur' x='-50%25' y='-50%25' width='200%25' height='200%25'%3E%3CfeGaussianBlur stdDeviation='3.6'/%3E%3C/filter%3E%3ClinearGradient id='f1' gradientUnits='userSpaceOnUse' x1='32.8' y1='18.0' x2='95.2' y2='102.0'%3E%3Cstop offset='0' stop-color='%2379d9c6'/%3E%3Cstop offset='.48' stop-color='%232EC4A6'/%3E%3Cstop offset='1' stop-color='%232ba793'/%3E%3C/linearGradient%3E%3CclipPath id='c2'%3E%3Crect x='12' y='18' width='104' height='84' rx='16'/%3E%3C/clipPath%3E%3CradialGradient id='s3'%3E%3Cstop offset='0' stop-color='%23246a6b' stop-opacity='.5'/%3E%3Cstop offset='1' stop-color='%23246a6b' stop-opacity='0'/%3E%3C/radialGradient%3E%3CradialGradient id='g4'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.66'/%3E%3Cstop offset='.5' stop-color='%23fff' stop-opacity='.2'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/radialGradient%3E%3ClinearGradient id='r5' gradientUnits='userSpaceOnUse' x1='0' y1='18.0' x2='0' y2='68.4'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.75'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cellipse cx='64' cy='113' rx='48' ry='6' fill='%2307040d' opacity='0.55' filter='url(%23blur)'/%3E%3Cg fill='%23235f64' transform='translate(0 8)'%3E%3Crect x='12' y='18' width='104' height='84' rx='16'/%3E%3C/g%3E%3Cg fill='%23246568' transform='translate(0 7)'%3E%3Crect x='12' y='18' width='104' height='84' rx='16'/%3E%3C/g%3E%3Cg fill='%23246b6c' transform='translate(0 6)'%3E%3Crect x='12' y='18' width='104' height='84' rx='16'/%3E%3C/g%3E%3Cg fill='%23257170' transform='translate(0 5)'%3E%3Crect x='12' y='18' width='104' height='84' rx='16'/%3E%3C/g%3E%3Cg fill='%23267674' transform='translate(0 4)'%3E%3Crect x='12' y='18' width='104' height='84' rx='16'/%3E%3C/g%3E%3Cg fill='%23267c77' transform='translate(0 3)'%3E%3Crect x='12' y='18' width='104' height='84' rx='16'/%3E%3C/g%3E%3Cg fill='%2327827b' transform='translate(0 2)'%3E%3Crect x='12' y='18' width='104' height='84' rx='16'/%3E%3C/g%3E%3Cg fill='%2327887f' transform='translate(0 1)'%3E%3Crect x='12' y='18' width='104' height='84' rx='16'/%3E%3C/g%3E%3Cg fill='url(%23f1)'%3E%3Crect x='12' y='18' width='104' height='84' rx='16'/%3E%3C/g%3E%3Cg clip-path='url(%23c2)'%3E%3Cellipse cx='95.2' cy='102.0' rx='64.5' ry='35.3' fill='url(%23s3)'/%3E%3Cellipse cx='47.4' cy='30.6' rx='52.0' ry='30.2' fill='url(%23g4)'/%3E%3Cg fill='none' stroke='url(%23r5)' stroke-width='2.6'%3E%3Crect x='12' y='18' width='104' height='84' rx='16'/%3E%3C/g%3E%3C/g%3E%3Cg fill='%232a9c8c' opacity='1'%3E%3Cpath d='M12 38 V34 Q12 18 28 18 H100 Q116 18 116 34 V38 Z'/%3E%3C/g%3E%3Cg fill='%23F26D6D' opacity='1'%3E%3Ccircle cx='26' cy='28' r='3.6'/%3E%3C/g%3E%3Cg fill='%23F2B84B' opacity='1'%3E%3Ccircle cx='38' cy='28' r='3.6'/%3E%3C/g%3E%3Cg fill='%23ffffff' opacity='1'%3E%3Ccircle cx='50' cy='28' r='3.6'/%3E%3C/g%3E%3Cg fill='none' stroke-linecap='round' stroke-linejoin='round' stroke-width='7' stroke='%237f798b' transform='translate(0 2)'%3E%3Cpath d='M50 56 L38 70 L50 84'/%3E%3Cpath d='M78 56 L90 70 L78 84'/%3E%3Cpath d='M70 52 L58 88'/%3E%3C/g%3E%3Cg fill='none' stroke-linecap='round' stroke-linejoin='round' stroke-width='7' stroke='%239c98a6' transform='translate(0 1)'%3E%3Cpath d='M50 56 L38 70 L50 84'/%3E%3Cpath d='M78 56 L90 70 L78 84'/%3E%3Cpath d='M70 52 L58 88'/%3E%3C/g%3E%3Cg fill='none' stroke-linecap='round' stroke-linejoin='round' stroke-width='7' stroke='%23ffffff'%3E%3Cpath d='M50 56 L38 70 L50 84'/%3E%3Cpath d='M78 56 L90 70 L78 84'/%3E%3Cpath d='M70 52 L58 88'/%3E%3C/g%3E%3Cg fill='none' stroke-linecap='round' stroke-linejoin='round' stroke-width='2.4' stroke='%23ffffff' stroke-opacity='.8' transform='translate(0 -1.2)'%3E%3Cpath d='M50 56 L38 70 L50 84'/%3E%3Cpath d='M78 56 L90 70 L78 84'/%3E%3Cpath d='M70 52 L58 88'/%3E%3C/g%3E%3C/svg%3E",
+  "globe": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128' width='128' height='128'%3E%3Cdefs%3E%3Cfilter id='blur' x='-50%25' y='-50%25' width='200%25' height='200%25'%3E%3CfeGaussianBlur stdDeviation='3.6'/%3E%3C/filter%3E%3CclipPath id='gl'%3E%3Ccircle cx='64' cy='58' r='44'/%3E%3C/clipPath%3E%3ClinearGradient id='f1' gradientUnits='userSpaceOnUse' x1='37.6' y1='14.0' x2='90.4' y2='102.0'%3E%3Cstop offset='0' stop-color='%238bc6f7'/%3E%3Cstop offset='.48' stop-color='%234AA6F2'/%3E%3Cstop offset='1' stop-color='%23428ed3'/%3E%3C/linearGradient%3E%3CclipPath id='c2'%3E%3Ccircle cx='64' cy='58' r='44'/%3E%3C/clipPath%3E%3CradialGradient id='s3'%3E%3Cstop offset='0' stop-color='%23325b91' stop-opacity='.5'/%3E%3Cstop offset='1' stop-color='%23325b91' stop-opacity='0'/%3E%3C/radialGradient%3E%3CradialGradient id='g4'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.66'/%3E%3Cstop offset='.5' stop-color='%23fff' stop-opacity='.2'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/radialGradient%3E%3ClinearGradient id='r5' gradientUnits='userSpaceOnUse' x1='0' y1='14.0' x2='0' y2='66.8'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.75'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cellipse cx='64' cy='113' rx='40' ry='6' fill='%2307040d' opacity='0.55' filter='url(%23blur)'/%3E%3Cg fill='%232f5285' transform='translate(0 5)'%3E%3Ccircle cx='64' cy='58' r='44'/%3E%3C/g%3E%3Cg fill='%23325a8f' transform='translate(0 4)'%3E%3Ccircle cx='64' cy='58' r='44'/%3E%3C/g%3E%3Cg fill='%23346299' transform='translate(0 3)'%3E%3Ccircle cx='64' cy='58' r='44'/%3E%3C/g%3E%3Cg fill='%233769a4' transform='translate(0 2)'%3E%3Ccircle cx='64' cy='58' r='44'/%3E%3C/g%3E%3Cg fill='%233971ae' transform='translate(0 1)'%3E%3Ccircle cx='64' cy='58' r='44'/%3E%3C/g%3E%3Cg fill='url(%23f1)'%3E%3Ccircle cx='64' cy='58' r='44'/%3E%3C/g%3E%3Cg clip-path='url(%23gl)'%3E%3Cg fill='%233FBF7F' opacity='.92'%3E%3Cpath d='M34 28 Q48 20 58 30 Q62 42 50 48 Q44 58 34 52 Q24 40 34 28Z'/%3E%3Cpath d='M70 60 Q84 54 94 64 Q98 80 84 88 Q72 92 70 82 Q64 70 70 60Z'/%3E%3Cpath d='M78 22 Q90 22 96 32 Q88 36 80 32Z'/%3E%3C/g%3E%3Cg fill='none' stroke='%23E3F1FF' stroke-opacity='.7' stroke-width='3'%3E%3Cellipse cx='64' cy='58' rx='18' ry='44'/%3E%3Cpath d='M64 14v88M20 58h88M25 36h78M25 80h78'/%3E%3C/g%3E%3C/g%3E%3Cg clip-path='url(%23c2)'%3E%3Cellipse cx='90.4' cy='102.0' rx='54.6' ry='37.0' fill='url(%23s3)'/%3E%3Cellipse cx='49.9' cy='27.2' rx='44.0' ry='31.7' fill='url(%23g4)'/%3E%3Cg fill='none' stroke='url(%23r5)' stroke-width='2.6'%3E%3Ccircle cx='64' cy='58' r='44'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E",
+  "layers": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128' width='128' height='128'%3E%3Cdefs%3E%3Cfilter id='blur' x='-50%25' y='-50%25' width='200%25' height='200%25'%3E%3CfeGaussianBlur stdDeviation='3.6'/%3E%3C/filter%3E%3ClinearGradient id='f1' gradientUnits='userSpaceOnUse' x1='37.6' y1='56.0' x2='90.4' y2='100.0'%3E%3Cstop offset='0' stop-color='%23968bde'/%3E%3Cstop offset='.48' stop-color='%235B49CC'/%3E%3Cstop offset='1' stop-color='%235140b3'/%3E%3C/linearGradient%3E%3CclipPath id='c2'%3E%3Cpath d='M64 56 L108 78 L64 100 L20 78 Z'/%3E%3C/clipPath%3E%3CradialGradient id='s3'%3E%3Cstop offset='0' stop-color='%233a2c7e' stop-opacity='.5'/%3E%3Cstop offset='1' stop-color='%233a2c7e' stop-opacity='0'/%3E%3C/radialGradient%3E%3CradialGradient id='g4'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.66'/%3E%3Cstop offset='.5' stop-color='%23fff' stop-opacity='.2'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/radialGradient%3E%3ClinearGradient id='r5' gradientUnits='userSpaceOnUse' x1='0' y1='56.0' x2='0' y2='82.4'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.75'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/linearGradient%3E%3ClinearGradient id='f6' gradientUnits='userSpaceOnUse' x1='37.6' y1='38.0' x2='90.4' y2='82.0'%3E%3Cstop offset='0' stop-color='%23b5a9f7'/%3E%3Cstop offset='.48' stop-color='%238B78F2'/%3E%3Cstop offset='1' stop-color='%237967d3'/%3E%3C/linearGradient%3E%3CclipPath id='c7'%3E%3Cpath d='M64 38 L108 60 L64 82 L20 60 Z'/%3E%3C/clipPath%3E%3CradialGradient id='s8'%3E%3Cstop offset='0' stop-color='%23524491' stop-opacity='.5'/%3E%3Cstop offset='1' stop-color='%23524491' stop-opacity='0'/%3E%3C/radialGradient%3E%3CradialGradient id='g9'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.66'/%3E%3Cstop offset='.5' stop-color='%23fff' stop-opacity='.2'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/radialGradient%3E%3ClinearGradient id='r10' gradientUnits='userSpaceOnUse' x1='0' y1='38.0' x2='0' y2='64.4'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.75'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/linearGradient%3E%3ClinearGradient id='f11' gradientUnits='userSpaceOnUse' x1='37.6' y1='20.0' x2='90.4' y2='64.0'%3E%3Cstop offset='0' stop-color='%23d1c6ff'/%3E%3Cstop offset='.48' stop-color='%23B7A6FF'/%3E%3Cstop offset='1' stop-color='%239e8ede'/%3E%3C/linearGradient%3E%3CclipPath id='c12'%3E%3Cpath d='M64 20 L108 42 L64 64 L20 42 Z'/%3E%3C/clipPath%3E%3CradialGradient id='s13'%3E%3Cstop offset='0' stop-color='%23685b98' stop-opacity='.5'/%3E%3Cstop offset='1' stop-color='%23685b98' stop-opacity='0'/%3E%3C/radialGradient%3E%3CradialGradient id='g14'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.66'/%3E%3Cstop offset='.5' stop-color='%23fff' stop-opacity='.2'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/radialGradient%3E%3ClinearGradient id='r15' gradientUnits='userSpaceOnUse' x1='0' y1='20.0' x2='0' y2='46.4'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.75'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cellipse cx='64' cy='113' rx='44' ry='6' fill='%2307040d' opacity='0.55' filter='url(%23blur)'/%3E%3Cg fill='%23372975' stroke='%23372975' stroke-width='8' stroke-linejoin='round' transform='translate(0 6)'%3E%3Cpath d='M64 56 L108 78 L64 100 L20 78 Z'/%3E%3C/g%3E%3Cg fill='%233a2c7c' stroke='%233a2c7c' stroke-width='8' stroke-linejoin='round' transform='translate(0 5)'%3E%3Cpath d='M64 56 L108 78 L64 100 L20 78 Z'/%3E%3C/g%3E%3Cg fill='%233d2e82' stroke='%233d2e82' stroke-width='8' stroke-linejoin='round' transform='translate(0 4)'%3E%3Cpath d='M64 56 L108 78 L64 100 L20 78 Z'/%3E%3C/g%3E%3Cg fill='%23403089' stroke='%23403089' stroke-width='8' stroke-linejoin='round' transform='translate(0 3)'%3E%3Cpath d='M64 56 L108 78 L64 100 L20 78 Z'/%3E%3C/g%3E%3Cg fill='%23423390' stroke='%23423390' stroke-width='8' stroke-linejoin='round' transform='translate(0 2)'%3E%3Cpath d='M64 56 L108 78 L64 100 L20 78 Z'/%3E%3C/g%3E%3Cg fill='%23453696' stroke='%23453696' stroke-width='8' stroke-linejoin='round' transform='translate(0 1)'%3E%3Cpath d='M64 56 L108 78 L64 100 L20 78 Z'/%3E%3C/g%3E%3Cg fill='url(%23f1)' stroke='url(%23f1)' stroke-width='8' stroke-linejoin='round'%3E%3Cpath d='M64 56 L108 78 L64 100 L20 78 Z'/%3E%3C/g%3E%3Cg clip-path='url(%23c2)'%3E%3Cellipse cx='90.4' cy='100.0' rx='54.6' ry='18.5' fill='url(%23s3)'/%3E%3Cellipse cx='49.9' cy='62.6' rx='44.0' ry='15.8' fill='url(%23g4)'/%3E%3Cg fill='none' stroke='url(%23r5)' stroke-width='2.6'%3E%3Cpath d='M64 56 L108 78 L64 100 L20 78 Z'/%3E%3C/g%3E%3C/g%3E%3Cg fill='%234c3e85' stroke='%234c3e85' stroke-width='8' stroke-linejoin='round' transform='translate(0 6)'%3E%3Cpath d='M64 38 L108 60 L64 82 L20 60 Z'/%3E%3C/g%3E%3Cg fill='%2351428e' stroke='%2351428e' stroke-width='8' stroke-linejoin='round' transform='translate(0 5)'%3E%3Cpath d='M64 38 L108 60 L64 82 L20 60 Z'/%3E%3C/g%3E%3Cg fill='%23564796' stroke='%23564796' stroke-width='8' stroke-linejoin='round' transform='translate(0 4)'%3E%3Cpath d='M64 38 L108 60 L64 82 L20 60 Z'/%3E%3C/g%3E%3Cg fill='%235a4c9e' stroke='%235a4c9e' stroke-width='8' stroke-linejoin='round' transform='translate(0 3)'%3E%3Cpath d='M64 38 L108 60 L64 82 L20 60 Z'/%3E%3C/g%3E%3Cg fill='%235f50a7' stroke='%235f50a7' stroke-width='8' stroke-linejoin='round' transform='translate(0 2)'%3E%3Cpath d='M64 38 L108 60 L64 82 L20 60 Z'/%3E%3C/g%3E%3Cg fill='%236454b0' stroke='%236454b0' stroke-width='8' stroke-linejoin='round' transform='translate(0 1)'%3E%3Cpath d='M64 38 L108 60 L64 82 L20 60 Z'/%3E%3C/g%3E%3Cg fill='url(%23f6)' stroke='url(%23f6)' stroke-width='8' stroke-linejoin='round'%3E%3Cpath d='M64 38 L108 60 L64 82 L20 60 Z'/%3E%3C/g%3E%3Cg clip-path='url(%23c7)'%3E%3Cellipse cx='90.4' cy='82.0' rx='54.6' ry='18.5' fill='url(%23s8)'/%3E%3Cellipse cx='49.9' cy='44.6' rx='44.0' ry='15.8' fill='url(%23g9)'/%3E%3Cg fill='none' stroke='url(%23r10)' stroke-width='2.6'%3E%3Cpath d='M64 38 L108 60 L64 82 L20 60 Z'/%3E%3C/g%3E%3C/g%3E%3Cg fill='%235f528b' stroke='%235f528b' stroke-width='8' stroke-linejoin='round' transform='translate(0 6)'%3E%3Cpath d='M64 20 L108 42 L64 64 L20 42 Z'/%3E%3C/g%3E%3Cg fill='%23665894' stroke='%23665894' stroke-width='8' stroke-linejoin='round' transform='translate(0 5)'%3E%3Cpath d='M64 20 L108 42 L64 64 L20 42 Z'/%3E%3C/g%3E%3Cg fill='%236d5f9d' stroke='%236d5f9d' stroke-width='8' stroke-linejoin='round' transform='translate(0 4)'%3E%3Cpath d='M64 20 L108 42 L64 64 L20 42 Z'/%3E%3C/g%3E%3Cg fill='%237466a6' stroke='%237466a6' stroke-width='8' stroke-linejoin='round' transform='translate(0 3)'%3E%3Cpath d='M64 20 L108 42 L64 64 L20 42 Z'/%3E%3C/g%3E%3Cg fill='%237a6caf' stroke='%237a6caf' stroke-width='8' stroke-linejoin='round' transform='translate(0 2)'%3E%3Cpath d='M64 20 L108 42 L64 64 L20 42 Z'/%3E%3C/g%3E%3Cg fill='%238172b8' stroke='%238172b8' stroke-width='8' stroke-linejoin='round' transform='translate(0 1)'%3E%3Cpath d='M64 20 L108 42 L64 64 L20 42 Z'/%3E%3C/g%3E%3Cg fill='url(%23f11)' stroke='url(%23f11)' stroke-width='8' stroke-linejoin='round'%3E%3Cpath d='M64 20 L108 42 L64 64 L20 42 Z'/%3E%3C/g%3E%3Cg clip-path='url(%23c12)'%3E%3Cellipse cx='90.4' cy='64.0' rx='54.6' ry='18.5' fill='url(%23s13)'/%3E%3Cellipse cx='49.9' cy='26.6' rx='44.0' ry='15.8' fill='url(%23g14)'/%3E%3Cg fill='none' stroke='url(%23r15)' stroke-width='2.6'%3E%3Cpath d='M64 20 L108 42 L64 64 L20 42 Z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E",
+  "palette": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128' width='128' height='128'%3E%3Cdefs%3E%3Cfilter id='blur' x='-50%25' y='-50%25' width='200%25' height='200%25'%3E%3CfeGaussianBlur stdDeviation='3.6'/%3E%3C/filter%3E%3ClinearGradient id='f1' gradientUnits='userSpaceOnUse' x1='32.8' y1='10.0' x2='95.2' y2='104.0'%3E%3Cstop offset='0' stop-color='%23f7e7c5'/%3E%3Cstop offset='.48' stop-color='%23F3D9A4'/%3E%3Cstop offset='1' stop-color='%23d0b991'/%3E%3C/linearGradient%3E%3CclipPath id='c2'%3E%3Cpath d='M64 10 C94 10 116 30 116 54 C116 72 104 78 92 76 C82 74 76 80 80 90 C84 100 76 104 64 104 C34 104 12 82 12 56 C12 30 34 10 64 10 Z'/%3E%3C/clipPath%3E%3CradialGradient id='s3'%3E%3Cstop offset='0' stop-color='%2386746a' stop-opacity='.5'/%3E%3Cstop offset='1' stop-color='%2386746a' stop-opacity='0'/%3E%3C/radialGradient%3E%3CradialGradient id='g4'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.66'/%3E%3Cstop offset='.5' stop-color='%23fff' stop-opacity='.2'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/radialGradient%3E%3ClinearGradient id='r5' gradientUnits='userSpaceOnUse' x1='0' y1='10.0' x2='0' y2='66.4'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.75'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/linearGradient%3E%3ClinearGradient id='f6' gradientUnits='userSpaceOnUse' x1='32.3' y1='26.5' x2='43.7' y2='45.5'%3E%3Cstop offset='0' stop-color='%23f4a3ce'/%3E%3Cstop offset='.48' stop-color='%23EE6FB2'/%3E%3Cstop offset='1' stop-color='%23cc609d'/%3E%3C/linearGradient%3E%3CclipPath id='c7'%3E%3Ccircle cx='38' cy='36' r='9.5'/%3E%3C/clipPath%3E%3CradialGradient id='s8'%3E%3Cstop offset='0' stop-color='%23844071' stop-opacity='.5'/%3E%3Cstop offset='1' stop-color='%23844071' stop-opacity='0'/%3E%3C/radialGradient%3E%3CradialGradient id='g9'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.66'/%3E%3Cstop offset='.5' stop-color='%23fff' stop-opacity='.2'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/radialGradient%3E%3ClinearGradient id='f10' gradientUnits='userSpaceOnUse' x1='56.3' y1='16.5' x2='67.7' y2='35.5'%3E%3Cstop offset='0' stop-color='%23f7d28c'/%3E%3Cstop offset='.48' stop-color='%23F2B84B'/%3E%3Cstop offset='1' stop-color='%23cf9d47'/%3E%3C/linearGradient%3E%3CclipPath id='c11'%3E%3Ccircle cx='62' cy='26' r='9.5'/%3E%3C/clipPath%3E%3CradialGradient id='s12'%3E%3Cstop offset='0' stop-color='%2386643e' stop-opacity='.5'/%3E%3Cstop offset='1' stop-color='%2386643e' stop-opacity='0'/%3E%3C/radialGradient%3E%3CradialGradient id='g13'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.66'/%3E%3Cstop offset='.5' stop-color='%23fff' stop-opacity='.2'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/radialGradient%3E%3ClinearGradient id='f14' gradientUnits='userSpaceOnUse' x1='81.3' y1='26.5' x2='92.7' y2='45.5'%3E%3Cstop offset='0' stop-color='%2379d9c6'/%3E%3Cstop offset='.48' stop-color='%232EC4A6'/%3E%3Cstop offset='1' stop-color='%232ba793'/%3E%3C/linearGradient%3E%3CclipPath id='c15'%3E%3Ccircle cx='87' cy='36' r='9.5'/%3E%3C/clipPath%3E%3CradialGradient id='s16'%3E%3Cstop offset='0' stop-color='%23246a6b' stop-opacity='.5'/%3E%3Cstop offset='1' stop-color='%23246a6b' stop-opacity='0'/%3E%3C/radialGradient%3E%3CradialGradient id='g17'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.66'/%3E%3Cstop offset='.5' stop-color='%23fff' stop-opacity='.2'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/radialGradient%3E%3ClinearGradient id='f18' gradientUnits='userSpaceOnUse' x1='25.3' y1='51.5' x2='36.7' y2='70.5'%3E%3Cstop offset='0' stop-color='%23b5a9f7'/%3E%3Cstop offset='.48' stop-color='%238B78F2'/%3E%3Cstop offset='1' stop-color='%237967d3'/%3E%3C/linearGradient%3E%3CclipPath id='c19'%3E%3Ccircle cx='31' cy='61' r='9.5'/%3E%3C/clipPath%3E%3CradialGradient id='s20'%3E%3Cstop offset='0' stop-color='%23524491' stop-opacity='.5'/%3E%3Cstop offset='1' stop-color='%23524491' stop-opacity='0'/%3E%3C/radialGradient%3E%3CradialGradient id='g21'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.66'/%3E%3Cstop offset='.5' stop-color='%23fff' stop-opacity='.2'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/radialGradient%3E%3ClinearGradient id='f22' gradientUnits='userSpaceOnUse' x1='39.3' y1='73.5' x2='50.7' y2='92.5'%3E%3Cstop offset='0' stop-color='%238bc6f7'/%3E%3Cstop offset='.48' stop-color='%234AA6F2'/%3E%3Cstop offset='1' stop-color='%23428ed3'/%3E%3C/linearGradient%3E%3CclipPath id='c23'%3E%3Ccircle cx='45' cy='83' r='9.5'/%3E%3C/clipPath%3E%3CradialGradient id='s24'%3E%3Cstop offset='0' stop-color='%23325b91' stop-opacity='.5'/%3E%3Cstop offset='1' stop-color='%23325b91' stop-opacity='0'/%3E%3C/radialGradient%3E%3CradialGradient id='g25'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.66'/%3E%3Cstop offset='.5' stop-color='%23fff' stop-opacity='.2'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cellipse cx='64' cy='113' rx='48' ry='6' fill='%2307040d' opacity='0.55' filter='url(%23blur)'/%3E%3Cg fill='%23796863' transform='translate(0 7)'%3E%3Cpath d='M64 10 C94 10 116 30 116 54 C116 72 104 78 92 76 C82 74 76 80 80 90 C84 100 76 104 64 104 C34 104 12 82 12 56 C12 30 34 10 64 10 Z'/%3E%3C/g%3E%3Cg fill='%23817067' transform='translate(0 6)'%3E%3Cpath d='M64 10 C94 10 116 30 116 54 C116 72 104 78 92 76 C82 74 76 80 80 90 C84 100 76 104 64 104 C34 104 12 82 12 56 C12 30 34 10 64 10 Z'/%3E%3C/g%3E%3Cg fill='%2389776c' transform='translate(0 5)'%3E%3Cpath d='M64 10 C94 10 116 30 116 54 C116 72 104 78 92 76 C82 74 76 80 80 90 C84 100 76 104 64 104 C34 104 12 82 12 56 C12 30 34 10 64 10 Z'/%3E%3C/g%3E%3Cg fill='%23917f70' transform='translate(0 4)'%3E%3Cpath d='M64 10 C94 10 116 30 116 54 C116 72 104 78 92 76 C82 74 76 80 80 90 C84 100 76 104 64 104 C34 104 12 82 12 56 C12 30 34 10 64 10 Z'/%3E%3C/g%3E%3Cg fill='%239a8674' transform='translate(0 3)'%3E%3Cpath d='M64 10 C94 10 116 30 116 54 C116 72 104 78 92 76 C82 74 76 80 80 90 C84 100 76 104 64 104 C34 104 12 82 12 56 C12 30 34 10 64 10 Z'/%3E%3C/g%3E%3Cg fill='%23a28e78' transform='translate(0 2)'%3E%3Cpath d='M64 10 C94 10 116 30 116 54 C116 72 104 78 92 76 C82 74 76 80 80 90 C84 100 76 104 64 104 C34 104 12 82 12 56 C12 30 34 10 64 10 Z'/%3E%3C/g%3E%3Cg fill='%23aa957d' transform='translate(0 1)'%3E%3Cpath d='M64 10 C94 10 116 30 116 54 C116 72 104 78 92 76 C82 74 76 80 80 90 C84 100 76 104 64 104 C34 104 12 82 12 56 C12 30 34 10 64 10 Z'/%3E%3C/g%3E%3Cg fill='url(%23f1)'%3E%3Cpath d='M64 10 C94 10 116 30 116 54 C116 72 104 78 92 76 C82 74 76 80 80 90 C84 100 76 104 64 104 C34 104 12 82 12 56 C12 30 34 10 64 10 Z'/%3E%3C/g%3E%3Cg clip-path='url(%23c2)'%3E%3Cellipse cx='95.2' cy='104.0' rx='64.5' ry='39.5' fill='url(%23s3)'/%3E%3Cellipse cx='47.4' cy='24.1' rx='52.0' ry='33.8' fill='url(%23g4)'/%3E%3Cg fill='none' stroke='url(%23r5)' stroke-width='2.6'%3E%3Cpath d='M64 10 C94 10 116 30 116 54 C116 72 104 78 92 76 C82 74 76 80 80 90 C84 100 76 104 64 104 C34 104 12 82 12 56 C12 30 34 10 64 10 Z'/%3E%3C/g%3E%3C/g%3E%3Cg fill='%23773a69' transform='translate(0 3)'%3E%3Ccircle cx='38' cy='36' r='9.5'/%3E%3C/g%3E%3Cg fill='%23894274' transform='translate(0 2)'%3E%3Ccircle cx='38' cy='36' r='9.5'/%3E%3C/g%3E%3Cg fill='%239c4a80' transform='translate(0 1)'%3E%3Ccircle cx='38' cy='36' r='9.5'/%3E%3C/g%3E%3Cg fill='url(%23f6)'%3E%3Ccircle cx='38' cy='36' r='9.5'/%3E%3C/g%3E%3Cg clip-path='url(%23c7)'%3E%3Cellipse cx='43.7' cy='45.5' rx='11.8' ry='8.0' fill='url(%23s8)'/%3E%3Cellipse cx='35.0' cy='29.4' rx='9.5' ry='6.8' fill='url(%23g9)'/%3E%3C/g%3E%3Cg fill='%23795a3c' transform='translate(0 3)'%3E%3Ccircle cx='62' cy='26' r='9.5'/%3E%3C/g%3E%3Cg fill='%238c693e' transform='translate(0 2)'%3E%3Ccircle cx='62' cy='26' r='9.5'/%3E%3C/g%3E%3Cg fill='%239e7741' transform='translate(0 1)'%3E%3Ccircle cx='62' cy='26' r='9.5'/%3E%3C/g%3E%3Cg fill='url(%23f10)'%3E%3Ccircle cx='62' cy='26' r='9.5'/%3E%3C/g%3E%3Cg clip-path='url(%23c11)'%3E%3Cellipse cx='67.7' cy='35.5' rx='11.8' ry='8.0' fill='url(%23s12)'/%3E%3Cellipse cx='59.0' cy='19.4' rx='9.5' ry='6.8' fill='url(%23g13)'/%3E%3C/g%3E%3Cg fill='%23235f64' transform='translate(0 3)'%3E%3Ccircle cx='87' cy='36' r='9.5'/%3E%3C/g%3E%3Cg fill='%23256f6e' transform='translate(0 2)'%3E%3Ccircle cx='87' cy='36' r='9.5'/%3E%3C/g%3E%3Cg fill='%23267e79' transform='translate(0 1)'%3E%3Ccircle cx='87' cy='36' r='9.5'/%3E%3C/g%3E%3Cg fill='url(%23f14)'%3E%3Ccircle cx='87' cy='36' r='9.5'/%3E%3C/g%3E%3Cg clip-path='url(%23c15)'%3E%3Cellipse cx='92.7' cy='45.5' rx='11.8' ry='8.0' fill='url(%23s16)'/%3E%3Cellipse cx='84.0' cy='29.4' rx='9.5' ry='6.8' fill='url(%23g17)'/%3E%3C/g%3E%3Cg fill='%234c3e85' transform='translate(0 3)'%3E%3Ccircle cx='31' cy='61' r='9.5'/%3E%3C/g%3E%3Cg fill='%23564796' transform='translate(0 2)'%3E%3Ccircle cx='31' cy='61' r='9.5'/%3E%3C/g%3E%3Cg fill='%235f50a7' transform='translate(0 1)'%3E%3Ccircle cx='31' cy='61' r='9.5'/%3E%3C/g%3E%3Cg fill='url(%23f18)'%3E%3Ccircle cx='31' cy='61' r='9.5'/%3E%3C/g%3E%3Cg clip-path='url(%23c19)'%3E%3Cellipse cx='36.7' cy='70.5' rx='11.8' ry='8.0' fill='url(%23s20)'/%3E%3Cellipse cx='28.0' cy='54.4' rx='9.5' ry='6.8' fill='url(%23g21)'/%3E%3C/g%3E%3Cg fill='%232f5285' transform='translate(0 3)'%3E%3Ccircle cx='45' cy='83' r='9.5'/%3E%3C/g%3E%3Cg fill='%23335f96' transform='translate(0 2)'%3E%3Ccircle cx='45' cy='83' r='9.5'/%3E%3C/g%3E%3Cg fill='%23386ca7' transform='translate(0 1)'%3E%3Ccircle cx='45' cy='83' r='9.5'/%3E%3C/g%3E%3Cg fill='url(%23f22)'%3E%3Ccircle cx='45' cy='83' r='9.5'/%3E%3C/g%3E%3Cg clip-path='url(%23c23)'%3E%3Cellipse cx='50.7' cy='92.5' rx='11.8' ry='8.0' fill='url(%23s24)'/%3E%3Cellipse cx='42.0' cy='76.3' rx='9.5' ry='6.8' fill='url(%23g25)'/%3E%3C/g%3E%3C/svg%3E",
+  "gear": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128' width='128' height='128'%3E%3Cdefs%3E%3Cfilter id='blur' x='-50%25' y='-50%25' width='200%25' height='200%25'%3E%3CfeGaussianBlur stdDeviation='3.6'/%3E%3C/filter%3E%3ClinearGradient id='f1' gradientUnits='userSpaceOnUse' x1='36.4' y1='12.0' x2='91.6' y2='104.0'%3E%3Cstop offset='0' stop-color='%23c4c8e7'/%3E%3Cstop offset='.48' stop-color='%23A3A9D9'/%3E%3Cstop offset='1' stop-color='%238d91be'/%3E%3C/linearGradient%3E%3CclipPath id='c2'%3E%3Cpath d='M53.47 23.57L55.22 12.85L72.78 12.85L74.53 23.57A36 36 0 0 1 80.90 26.21L89.72 19.86L102.14 32.28L95.79 41.10A36 36 0 0 1 98.43 47.47L109.15 49.22L109.15 66.78L98.43 68.53A36 36 0 0 1 95.79 74.90L102.14 83.72L89.72 96.14L80.90 89.79A36 36 0 0 1 74.53 92.43L72.78 103.15L55.22 103.15L53.47 92.43A36 36 0 0 1 47.10 89.79L38.28 96.14L25.86 83.72L32.21 74.90A36 36 0 0 1 29.57 68.53L18.85 66.78L18.85 49.22L29.57 47.47A36 36 0 0 1 32.21 41.10L25.86 32.28L38.28 19.86L47.10 26.21A36 36 0 0 1 53.47 23.57ZM49 58a15 15 0 1 0 30 0a15 15 0 1 0 -30 0Z' fill-rule='evenodd' clip-rule='evenodd'/%3E%3C/clipPath%3E%3CradialGradient id='s3'%3E%3Cstop offset='0' stop-color='%235e5c84' stop-opacity='.5'/%3E%3Cstop offset='1' stop-color='%235e5c84' stop-opacity='0'/%3E%3C/radialGradient%3E%3CradialGradient id='g4'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.66'/%3E%3Cstop offset='.5' stop-color='%23fff' stop-opacity='.2'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/radialGradient%3E%3ClinearGradient id='r5' gradientUnits='userSpaceOnUse' x1='0' y1='12.0' x2='0' y2='67.2'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.75'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/linearGradient%3E%3ClinearGradient id='f6' gradientUnits='userSpaceOnUse' x1='50.2' y1='35.0' x2='77.8' y2='81.0'%3E%3Cstop offset='0' stop-color='%23d1c6ff'/%3E%3Cstop offset='.48' stop-color='%23B7A6FF'/%3E%3Cstop offset='1' stop-color='%239e8ede'/%3E%3C/linearGradient%3E%3CclipPath id='c7'%3E%3Cpath d='M41 58a23 23 0 1 0 46 0a23 23 0 1 0 -46 0ZM49 58a15 15 0 1 0 30 0a15 15 0 1 0 -30 0Z' fill-rule='evenodd' clip-rule='evenodd'/%3E%3C/clipPath%3E%3CradialGradient id='s8'%3E%3Cstop offset='0' stop-color='%23685b98' stop-opacity='.5'/%3E%3Cstop offset='1' stop-color='%23685b98' stop-opacity='0'/%3E%3C/radialGradient%3E%3CradialGradient id='g9'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.66'/%3E%3Cstop offset='.5' stop-color='%23fff' stop-opacity='.2'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/radialGradient%3E%3ClinearGradient id='r10' gradientUnits='userSpaceOnUse' x1='0' y1='35.0' x2='0' y2='62.6'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.75'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cellipse cx='64' cy='115' rx='40' ry='6' fill='%2307040d' opacity='0.55' filter='url(%23blur)'/%3E%3Cg fill='%2356537a' stroke='%2356537a' stroke-width='4' stroke-linejoin='round' transform='translate(0 8)'%3E%3Cpath d='M53.47 23.57L55.22 12.85L72.78 12.85L74.53 23.57A36 36 0 0 1 80.90 26.21L89.72 19.86L102.14 32.28L95.79 41.10A36 36 0 0 1 98.43 47.47L109.15 49.22L109.15 66.78L98.43 68.53A36 36 0 0 1 95.79 74.90L102.14 83.72L89.72 96.14L80.90 89.79A36 36 0 0 1 74.53 92.43L72.78 103.15L55.22 103.15L53.47 92.43A36 36 0 0 1 47.10 89.79L38.28 96.14L25.86 83.72L32.21 74.90A36 36 0 0 1 29.57 68.53L18.85 66.78L18.85 49.22L29.57 47.47A36 36 0 0 1 32.21 41.10L25.86 32.28L38.28 19.86L47.10 26.21A36 36 0 0 1 53.47 23.57ZM49 58a15 15 0 1 0 30 0a15 15 0 1 0 -30 0Z' fill-rule='evenodd' clip-rule='evenodd'/%3E%3C/g%3E%3Cg fill='%235a5880' stroke='%235a5880' stroke-width='4' stroke-linejoin='round' transform='translate(0 7)'%3E%3Cpath d='M53.47 23.57L55.22 12.85L72.78 12.85L74.53 23.57A36 36 0 0 1 80.90 26.21L89.72 19.86L102.14 32.28L95.79 41.10A36 36 0 0 1 98.43 47.47L109.15 49.22L109.15 66.78L98.43 68.53A36 36 0 0 1 95.79 74.90L102.14 83.72L89.72 96.14L80.90 89.79A36 36 0 0 1 74.53 92.43L72.78 103.15L55.22 103.15L53.47 92.43A36 36 0 0 1 47.10 89.79L38.28 96.14L25.86 83.72L32.21 74.90A36 36 0 0 1 29.57 68.53L18.85 66.78L18.85 49.22L29.57 47.47A36 36 0 0 1 32.21 41.10L25.86 32.28L38.28 19.86L47.10 26.21A36 36 0 0 1 53.47 23.57ZM49 58a15 15 0 1 0 30 0a15 15 0 1 0 -30 0Z' fill-rule='evenodd' clip-rule='evenodd'/%3E%3C/g%3E%3Cg fill='%235f5d85' stroke='%235f5d85' stroke-width='4' stroke-linejoin='round' transform='translate(0 6)'%3E%3Cpath d='M53.47 23.57L55.22 12.85L72.78 12.85L74.53 23.57A36 36 0 0 1 80.90 26.21L89.72 19.86L102.14 32.28L95.79 41.10A36 36 0 0 1 98.43 47.47L109.15 49.22L109.15 66.78L98.43 68.53A36 36 0 0 1 95.79 74.90L102.14 83.72L89.72 96.14L80.90 89.79A36 36 0 0 1 74.53 92.43L72.78 103.15L55.22 103.15L53.47 92.43A36 36 0 0 1 47.10 89.79L38.28 96.14L25.86 83.72L32.21 74.90A36 36 0 0 1 29.57 68.53L18.85 66.78L18.85 49.22L29.57 47.47A36 36 0 0 1 32.21 41.10L25.86 32.28L38.28 19.86L47.10 26.21A36 36 0 0 1 53.47 23.57ZM49 58a15 15 0 1 0 30 0a15 15 0 1 0 -30 0Z' fill-rule='evenodd' clip-rule='evenodd'/%3E%3C/g%3E%3Cg fill='%2364628a' stroke='%2364628a' stroke-width='4' stroke-linejoin='round' transform='translate(0 5)'%3E%3Cpath d='M53.47 23.57L55.22 12.85L72.78 12.85L74.53 23.57A36 36 0 0 1 80.90 26.21L89.72 19.86L102.14 32.28L95.79 41.10A36 36 0 0 1 98.43 47.47L109.15 49.22L109.15 66.78L98.43 68.53A36 36 0 0 1 95.79 74.90L102.14 83.72L89.72 96.14L80.90 89.79A36 36 0 0 1 74.53 92.43L72.78 103.15L55.22 103.15L53.47 92.43A36 36 0 0 1 47.10 89.79L38.28 96.14L25.86 83.72L32.21 74.90A36 36 0 0 1 29.57 68.53L18.85 66.78L18.85 49.22L29.57 47.47A36 36 0 0 1 32.21 41.10L25.86 32.28L38.28 19.86L47.10 26.21A36 36 0 0 1 53.47 23.57ZM49 58a15 15 0 1 0 30 0a15 15 0 1 0 -30 0Z' fill-rule='evenodd' clip-rule='evenodd'/%3E%3C/g%3E%3Cg fill='%23686790' stroke='%23686790' stroke-width='4' stroke-linejoin='round' transform='translate(0 4)'%3E%3Cpath d='M53.47 23.57L55.22 12.85L72.78 12.85L74.53 23.57A36 36 0 0 1 80.90 26.21L89.72 19.86L102.14 32.28L95.79 41.10A36 36 0 0 1 98.43 47.47L109.15 49.22L109.15 66.78L98.43 68.53A36 36 0 0 1 95.79 74.90L102.14 83.72L89.72 96.14L80.90 89.79A36 36 0 0 1 74.53 92.43L72.78 103.15L55.22 103.15L53.47 92.43A36 36 0 0 1 47.10 89.79L38.28 96.14L25.86 83.72L32.21 74.90A36 36 0 0 1 29.57 68.53L18.85 66.78L18.85 49.22L29.57 47.47A36 36 0 0 1 32.21 41.10L25.86 32.28L38.28 19.86L47.10 26.21A36 36 0 0 1 53.47 23.57ZM49 58a15 15 0 1 0 30 0a15 15 0 1 0 -30 0Z' fill-rule='evenodd' clip-rule='evenodd'/%3E%3C/g%3E%3Cg fill='%236c6c96' stroke='%236c6c96' stroke-width='4' stroke-linejoin='round' transform='translate(0 3)'%3E%3Cpath d='M53.47 23.57L55.22 12.85L72.78 12.85L74.53 23.57A36 36 0 0 1 80.90 26.21L89.72 19.86L102.14 32.28L95.79 41.10A36 36 0 0 1 98.43 47.47L109.15 49.22L109.15 66.78L98.43 68.53A36 36 0 0 1 95.79 74.90L102.14 83.72L89.72 96.14L80.90 89.79A36 36 0 0 1 74.53 92.43L72.78 103.15L55.22 103.15L53.47 92.43A36 36 0 0 1 47.10 89.79L38.28 96.14L25.86 83.72L32.21 74.90A36 36 0 0 1 29.57 68.53L18.85 66.78L18.85 49.22L29.57 47.47A36 36 0 0 1 32.21 41.10L25.86 32.28L38.28 19.86L47.10 26.21A36 36 0 0 1 53.47 23.57ZM49 58a15 15 0 1 0 30 0a15 15 0 1 0 -30 0Z' fill-rule='evenodd' clip-rule='evenodd'/%3E%3C/g%3E%3Cg fill='%2371719b' stroke='%2371719b' stroke-width='4' stroke-linejoin='round' transform='translate(0 2)'%3E%3Cpath d='M53.47 23.57L55.22 12.85L72.78 12.85L74.53 23.57A36 36 0 0 1 80.90 26.21L89.72 19.86L102.14 32.28L95.79 41.10A36 36 0 0 1 98.43 47.47L109.15 49.22L109.15 66.78L98.43 68.53A36 36 0 0 1 95.79 74.90L102.14 83.72L89.72 96.14L80.90 89.79A36 36 0 0 1 74.53 92.43L72.78 103.15L55.22 103.15L53.47 92.43A36 36 0 0 1 47.10 89.79L38.28 96.14L25.86 83.72L32.21 74.90A36 36 0 0 1 29.57 68.53L18.85 66.78L18.85 49.22L29.57 47.47A36 36 0 0 1 32.21 41.10L25.86 32.28L38.28 19.86L47.10 26.21A36 36 0 0 1 53.47 23.57ZM49 58a15 15 0 1 0 30 0a15 15 0 1 0 -30 0Z' fill-rule='evenodd' clip-rule='evenodd'/%3E%3C/g%3E%3Cg fill='%237676a0' stroke='%237676a0' stroke-width='4' stroke-linejoin='round' transform='translate(0 1)'%3E%3Cpath d='M53.47 23.57L55.22 12.85L72.78 12.85L74.53 23.57A36 36 0 0 1 80.90 26.21L89.72 19.86L102.14 32.28L95.79 41.10A36 36 0 0 1 98.43 47.47L109.15 49.22L109.15 66.78L98.43 68.53A36 36 0 0 1 95.79 74.90L102.14 83.72L89.72 96.14L80.90 89.79A36 36 0 0 1 74.53 92.43L72.78 103.15L55.22 103.15L53.47 92.43A36 36 0 0 1 47.10 89.79L38.28 96.14L25.86 83.72L32.21 74.90A36 36 0 0 1 29.57 68.53L18.85 66.78L18.85 49.22L29.57 47.47A36 36 0 0 1 32.21 41.10L25.86 32.28L38.28 19.86L47.10 26.21A36 36 0 0 1 53.47 23.57ZM49 58a15 15 0 1 0 30 0a15 15 0 1 0 -30 0Z' fill-rule='evenodd' clip-rule='evenodd'/%3E%3C/g%3E%3Cg fill='url(%23f1)' stroke='url(%23f1)' stroke-width='4' stroke-linejoin='round'%3E%3Cpath d='M53.47 23.57L55.22 12.85L72.78 12.85L74.53 23.57A36 36 0 0 1 80.90 26.21L89.72 19.86L102.14 32.28L95.79 41.10A36 36 0 0 1 98.43 47.47L109.15 49.22L109.15 66.78L98.43 68.53A36 36 0 0 1 95.79 74.90L102.14 83.72L89.72 96.14L80.90 89.79A36 36 0 0 1 74.53 92.43L72.78 103.15L55.22 103.15L53.47 92.43A36 36 0 0 1 47.10 89.79L38.28 96.14L25.86 83.72L32.21 74.90A36 36 0 0 1 29.57 68.53L18.85 66.78L18.85 49.22L29.57 47.47A36 36 0 0 1 32.21 41.10L25.86 32.28L38.28 19.86L47.10 26.21A36 36 0 0 1 53.47 23.57ZM49 58a15 15 0 1 0 30 0a15 15 0 1 0 -30 0Z' fill-rule='evenodd' clip-rule='evenodd'/%3E%3C/g%3E%3Cg clip-path='url(%23c2)'%3E%3Cellipse cx='91.6' cy='104.0' rx='57.0' ry='38.6' fill='url(%23s3)'/%3E%3Cellipse cx='49.3' cy='25.8' rx='46.0' ry='33.1' fill='url(%23g4)'/%3E%3Cg fill='none' stroke='url(%23r5)' stroke-width='2.6'%3E%3Cpath d='M53.47 23.57L55.22 12.85L72.78 12.85L74.53 23.57A36 36 0 0 1 80.90 26.21L89.72 19.86L102.14 32.28L95.79 41.10A36 36 0 0 1 98.43 47.47L109.15 49.22L109.15 66.78L98.43 68.53A36 36 0 0 1 95.79 74.90L102.14 83.72L89.72 96.14L80.90 89.79A36 36 0 0 1 74.53 92.43L72.78 103.15L55.22 103.15L53.47 92.43A36 36 0 0 1 47.10 89.79L38.28 96.14L25.86 83.72L32.21 74.90A36 36 0 0 1 29.57 68.53L18.85 66.78L18.85 49.22L29.57 47.47A36 36 0 0 1 32.21 41.10L25.86 32.28L38.28 19.86L47.10 26.21A36 36 0 0 1 53.47 23.57ZM49 58a15 15 0 1 0 30 0a15 15 0 1 0 -30 0Z' fill-rule='evenodd' clip-rule='evenodd'/%3E%3C/g%3E%3C/g%3E%3Cg fill='%235f528b' transform='translate(0 3)'%3E%3Cpath d='M41 58a23 23 0 1 0 46 0a23 23 0 1 0 -46 0ZM49 58a15 15 0 1 0 30 0a15 15 0 1 0 -30 0Z' fill-rule='evenodd' clip-rule='evenodd'/%3E%3C/g%3E%3Cg fill='%236d5f9d' transform='translate(0 2)'%3E%3Cpath d='M41 58a23 23 0 1 0 46 0a23 23 0 1 0 -46 0ZM49 58a15 15 0 1 0 30 0a15 15 0 1 0 -30 0Z' fill-rule='evenodd' clip-rule='evenodd'/%3E%3C/g%3E%3Cg fill='%237a6caf' transform='translate(0 1)'%3E%3Cpath d='M41 58a23 23 0 1 0 46 0a23 23 0 1 0 -46 0ZM49 58a15 15 0 1 0 30 0a15 15 0 1 0 -30 0Z' fill-rule='evenodd' clip-rule='evenodd'/%3E%3C/g%3E%3Cg fill='url(%23f6)'%3E%3Cpath d='M41 58a23 23 0 1 0 46 0a23 23 0 1 0 -46 0ZM49 58a15 15 0 1 0 30 0a15 15 0 1 0 -30 0Z' fill-rule='evenodd' clip-rule='evenodd'/%3E%3C/g%3E%3Cg clip-path='url(%23c7)'%3E%3Cellipse cx='77.8' cy='81.0' rx='28.5' ry='19.3' fill='url(%23s8)'/%3E%3Cellipse cx='56.6' cy='41.9' rx='23.0' ry='16.6' fill='url(%23g9)'/%3E%3Cg fill='none' stroke='url(%23r10)' stroke-width='2.6'%3E%3Cpath d='M41 58a23 23 0 1 0 46 0a23 23 0 1 0 -46 0ZM49 58a15 15 0 1 0 30 0a15 15 0 1 0 -30 0Z' fill-rule='evenodd' clip-rule='evenodd'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E",
+  "padlock": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128' width='128' height='128'%3E%3Cdefs%3E%3Cfilter id='blur' x='-50%25' y='-50%25' width='200%25' height='200%25'%3E%3CfeGaussianBlur stdDeviation='3.6'/%3E%3C/filter%3E%3ClinearGradient id='f1' gradientUnits='userSpaceOnUse' x1='40.0' y1='48.0' x2='88.0' y2='104.0'%3E%3Cstop offset='0' stop-color='%23f7d28c'/%3E%3Cstop offset='.48' stop-color='%23F2B84B'/%3E%3Cstop offset='1' stop-color='%23cf9d47'/%3E%3C/linearGradient%3E%3CclipPath id='c2'%3E%3Crect x='24' y='48' width='80' height='56' rx='16'/%3E%3C/clipPath%3E%3CradialGradient id='s3'%3E%3Cstop offset='0' stop-color='%2386643e' stop-opacity='.5'/%3E%3Cstop offset='1' stop-color='%2386643e' stop-opacity='0'/%3E%3C/radialGradient%3E%3CradialGradient id='g4'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.66'/%3E%3Cstop offset='.5' stop-color='%23fff' stop-opacity='.2'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/radialGradient%3E%3ClinearGradient id='r5' gradientUnits='userSpaceOnUse' x1='0' y1='48.0' x2='0' y2='81.6'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.75'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cellipse cx='64' cy='115' rx='38' ry='6' fill='%2307040d' opacity='0.55' filter='url(%23blur)'/%3E%3Cg fill='none' stroke-linecap='round' stroke-linejoin='round' stroke-width='11' stroke='%235e5b7c' transform='translate(0 4)'%3E%3Cpath d='M42 54 V38 A22 22 0 0 1 86 38 V54'/%3E%3C/g%3E%3Cg fill='none' stroke-linecap='round' stroke-linejoin='round' stroke-width='11' stroke='%23686687' transform='translate(0 3)'%3E%3Cpath d='M42 54 V38 A22 22 0 0 1 86 38 V54'/%3E%3C/g%3E%3Cg fill='none' stroke-linecap='round' stroke-linejoin='round' stroke-width='11' stroke='%23727292' transform='translate(0 2)'%3E%3Cpath d='M42 54 V38 A22 22 0 0 1 86 38 V54'/%3E%3C/g%3E%3Cg fill='none' stroke-linecap='round' stroke-linejoin='round' stroke-width='11' stroke='%237c7d9e' transform='translate(0 1)'%3E%3Cpath d='M42 54 V38 A22 22 0 0 1 86 38 V54'/%3E%3C/g%3E%3Cg fill='none' stroke-linecap='round' stroke-linejoin='round' stroke-width='11' stroke='%23B4BBDD'%3E%3Cpath d='M42 54 V38 A22 22 0 0 1 86 38 V54'/%3E%3C/g%3E%3Cg fill='none' stroke-linecap='round' stroke-linejoin='round' stroke-width='3.7' stroke='%23e2e5f2' stroke-opacity='.8' transform='translate(0 -1.9)'%3E%3Cpath d='M42 54 V38 A22 22 0 0 1 86 38 V54'/%3E%3C/g%3E%3Cg fill='%23795a3c' transform='translate(0 8)'%3E%3Crect x='24' y='48' width='80' height='56' rx='16'/%3E%3C/g%3E%3Cg fill='%2380603d' transform='translate(0 7)'%3E%3Crect x='24' y='48' width='80' height='56' rx='16'/%3E%3C/g%3E%3Cg fill='%2387653e' transform='translate(0 6)'%3E%3Crect x='24' y='48' width='80' height='56' rx='16'/%3E%3C/g%3E%3Cg fill='%238e6a3f' transform='translate(0 5)'%3E%3Crect x='24' y='48' width='80' height='56' rx='16'/%3E%3C/g%3E%3Cg fill='%23957040' transform='translate(0 4)'%3E%3Crect x='24' y='48' width='80' height='56' rx='16'/%3E%3C/g%3E%3Cg fill='%239c7640' transform='translate(0 3)'%3E%3Crect x='24' y='48' width='80' height='56' rx='16'/%3E%3C/g%3E%3Cg fill='%23a37b41' transform='translate(0 2)'%3E%3Crect x='24' y='48' width='80' height='56' rx='16'/%3E%3C/g%3E%3Cg fill='%23aa8042' transform='translate(0 1)'%3E%3Crect x='24' y='48' width='80' height='56' rx='16'/%3E%3C/g%3E%3Cg fill='url(%23f1)'%3E%3Crect x='24' y='48' width='80' height='56' rx='16'/%3E%3C/g%3E%3Cg clip-path='url(%23c2)'%3E%3Cellipse cx='88.0' cy='104.0' rx='49.6' ry='23.5' fill='url(%23s3)'/%3E%3Cellipse cx='51.2' cy='56.4' rx='40.0' ry='20.2' fill='url(%23g4)'/%3E%3Cg fill='none' stroke='url(%23r5)' stroke-width='2.6'%3E%3Crect x='24' y='48' width='80' height='56' rx='16'/%3E%3C/g%3E%3C/g%3E%3Cg fill='%23ffffff' opacity='.4' transform='translate(0 1.6)'%3E%3Ccircle cx='64' cy='70' r='7.5'/%3E%3Cpath d='M59.5 74 H68.5 L66.5 88 H61.5 Z'/%3E%3C/g%3E%3Cg fill='%238A5408'%3E%3Ccircle cx='64' cy='70' r='7.5'/%3E%3Cpath d='M59.5 74 H68.5 L66.5 88 H61.5 Z'/%3E%3C/g%3E%3C/svg%3E",
+  "folder": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128' width='128' height='128'%3E%3Cdefs%3E%3Cfilter id='blur' x='-50%25' y='-50%25' width='200%25' height='200%25'%3E%3CfeGaussianBlur stdDeviation='3.6'/%3E%3C/filter%3E%3ClinearGradient id='f1' gradientUnits='userSpaceOnUse' x1='32.8' y1='20.0' x2='95.2' y2='100.0'%3E%3Cstop offset='0' stop-color='%23aeb2cc'/%3E%3Cstop offset='.48' stop-color='%238086b0'/%3E%3Cstop offset='1' stop-color='%2370739c'/%3E%3C/linearGradient%3E%3CclipPath id='c2'%3E%3Cpath d='M12 30 Q12 20 22 20 H48 Q54 20 57 25 L61 31 H106 Q116 31 116 41 V92 Q116 100 106 100 H22 Q12 100 12 92 Z'/%3E%3C/clipPath%3E%3CradialGradient id='s3'%3E%3Cstop offset='0' stop-color='%234d4b70' stop-opacity='.5'/%3E%3Cstop offset='1' stop-color='%234d4b70' stop-opacity='0'/%3E%3C/radialGradient%3E%3ClinearGradient id='r4' gradientUnits='userSpaceOnUse' x1='0' y1='20.0' x2='0' y2='68.0'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.75'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/linearGradient%3E%3ClinearGradient id='f5' gradientUnits='userSpaceOnUse' x1='38.8' y1='32.0' x2='89.2' y2='76.0'%3E%3Cstop offset='0' stop-color='%23f7f5fd'/%3E%3Cstop offset='.48' stop-color='%23F3F0FC'/%3E%3Cstop offset='1' stop-color='%23d0ccdb'/%3E%3C/linearGradient%3E%3CclipPath id='c6'%3E%3Crect x='22' y='32' width='84' height='44' rx='5'/%3E%3C/clipPath%3E%3CradialGradient id='s7'%3E%3Cstop offset='0' stop-color='%23868096' stop-opacity='.5'/%3E%3Cstop offset='1' stop-color='%23868096' stop-opacity='0'/%3E%3C/radialGradient%3E%3ClinearGradient id='f8' gradientUnits='userSpaceOnUse' x1='32.8' y1='44.0' x2='95.2' y2='102.0'%3E%3Cstop offset='0' stop-color='%23bcc2de'/%3E%3Cstop offset='.48' stop-color='%2397A0CC'/%3E%3Cstop offset='1' stop-color='%238389b3'/%3E%3C/linearGradient%3E%3CclipPath id='c9'%3E%3Cpath d='M12 52 Q12 44 20 44 H108 Q116 44 116 52 V92 Q116 102 106 102 H22 Q12 102 12 92 Z'/%3E%3C/clipPath%3E%3CradialGradient id='s10'%3E%3Cstop offset='0' stop-color='%2358587e' stop-opacity='.5'/%3E%3Cstop offset='1' stop-color='%2358587e' stop-opacity='0'/%3E%3C/radialGradient%3E%3CradialGradient id='g11'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.66'/%3E%3Cstop offset='.5' stop-color='%23fff' stop-opacity='.2'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/radialGradient%3E%3ClinearGradient id='r12' gradientUnits='userSpaceOnUse' x1='0' y1='44.0' x2='0' y2='78.8'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.75'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cellipse cx='64' cy='113' rx='48' ry='6' fill='%2307040d' opacity='0.55' filter='url(%23blur)'/%3E%3Cg fill='%23474468' transform='translate(0 6)'%3E%3Cpath d='M12 30 Q12 20 22 20 H48 Q54 20 57 25 L61 31 H106 Q116 31 116 41 V92 Q116 100 106 100 H22 Q12 100 12 92 Z'/%3E%3C/g%3E%3Cg fill='%234b496e' transform='translate(0 5)'%3E%3Cpath d='M12 30 Q12 20 22 20 H48 Q54 20 57 25 L61 31 H106 Q116 31 116 41 V92 Q116 100 106 100 H22 Q12 100 12 92 Z'/%3E%3C/g%3E%3Cg fill='%23504e73' transform='translate(0 4)'%3E%3Cpath d='M12 30 Q12 20 22 20 H48 Q54 20 57 25 L61 31 H106 Q116 31 116 41 V92 Q116 100 106 100 H22 Q12 100 12 92 Z'/%3E%3C/g%3E%3Cg fill='%23545479' transform='translate(0 3)'%3E%3Cpath d='M12 30 Q12 20 22 20 H48 Q54 20 57 25 L61 31 H106 Q116 31 116 41 V92 Q116 100 106 100 H22 Q12 100 12 92 Z'/%3E%3C/g%3E%3Cg fill='%2358597f' transform='translate(0 2)'%3E%3Cpath d='M12 30 Q12 20 22 20 H48 Q54 20 57 25 L61 31 H106 Q116 31 116 41 V92 Q116 100 106 100 H22 Q12 100 12 92 Z'/%3E%3C/g%3E%3Cg fill='%235d5e84' transform='translate(0 1)'%3E%3Cpath d='M12 30 Q12 20 22 20 H48 Q54 20 57 25 L61 31 H106 Q116 31 116 41 V92 Q116 100 106 100 H22 Q12 100 12 92 Z'/%3E%3C/g%3E%3Cg fill='url(%23f1)'%3E%3Cpath d='M12 30 Q12 20 22 20 H48 Q54 20 57 25 L61 31 H106 Q116 31 116 41 V92 Q116 100 106 100 H22 Q12 100 12 92 Z'/%3E%3C/g%3E%3Cg clip-path='url(%23c2)'%3E%3Cellipse cx='95.2' cy='100.0' rx='64.5' ry='33.6' fill='url(%23s3)'/%3E%3Cg fill='none' stroke='url(%23r4)' stroke-width='2.6'%3E%3Cpath d='M12 30 Q12 20 22 20 H48 Q54 20 57 25 L61 31 H106 Q116 31 116 41 V92 Q116 100 106 100 H22 Q12 100 12 92 Z'/%3E%3C/g%3E%3C/g%3E%3Cg fill='%2379738a' transform='translate(0 1)'%3E%3Crect x='22' y='32' width='84' height='44' rx='5'/%3E%3C/g%3E%3Cg fill='url(%23f5)'%3E%3Crect x='22' y='32' width='84' height='44' rx='5'/%3E%3C/g%3E%3Cg clip-path='url(%23c6)'%3E%3Cellipse cx='89.2' cy='76.0' rx='52.1' ry='18.5' fill='url(%23s7)'/%3E%3C/g%3E%3Cg fill='%23514f75' transform='translate(0 7)'%3E%3Cpath d='M12 52 Q12 44 20 44 H108 Q116 44 116 52 V92 Q116 102 106 102 H22 Q12 102 12 92 Z'/%3E%3C/g%3E%3Cg fill='%2356547b' transform='translate(0 6)'%3E%3Cpath d='M12 52 Q12 44 20 44 H108 Q116 44 116 52 V92 Q116 102 106 102 H22 Q12 102 12 92 Z'/%3E%3C/g%3E%3Cg fill='%235a5a80' transform='translate(0 5)'%3E%3Cpath d='M12 52 Q12 44 20 44 H108 Q116 44 116 52 V92 Q116 102 106 102 H22 Q12 102 12 92 Z'/%3E%3C/g%3E%3Cg fill='%235f5f86' transform='translate(0 4)'%3E%3Cpath d='M12 52 Q12 44 20 44 H108 Q116 44 116 52 V92 Q116 102 106 102 H22 Q12 102 12 92 Z'/%3E%3C/g%3E%3Cg fill='%2364658c' transform='translate(0 3)'%3E%3Cpath d='M12 52 Q12 44 20 44 H108 Q116 44 116 52 V92 Q116 102 106 102 H22 Q12 102 12 92 Z'/%3E%3C/g%3E%3Cg fill='%23696a92' transform='translate(0 2)'%3E%3Cpath d='M12 52 Q12 44 20 44 H108 Q116 44 116 52 V92 Q116 102 106 102 H22 Q12 102 12 92 Z'/%3E%3C/g%3E%3Cg fill='%236d7097' transform='translate(0 1)'%3E%3Cpath d='M12 52 Q12 44 20 44 H108 Q116 44 116 52 V92 Q116 102 106 102 H22 Q12 102 12 92 Z'/%3E%3C/g%3E%3Cg fill='url(%23f8)'%3E%3Cpath d='M12 52 Q12 44 20 44 H108 Q116 44 116 52 V92 Q116 102 106 102 H22 Q12 102 12 92 Z'/%3E%3C/g%3E%3Cg clip-path='url(%23c9)'%3E%3Cellipse cx='95.2' cy='102.0' rx='64.5' ry='24.4' fill='url(%23s10)'/%3E%3Cellipse cx='47.4' cy='52.7' rx='52.0' ry='20.9' fill='url(%23g11)'/%3E%3Cg fill='none' stroke='url(%23r12)' stroke-width='2.6'%3E%3Cpath d='M12 52 Q12 44 20 44 H108 Q116 44 116 52 V92 Q116 102 106 102 H22 Q12 102 12 92 Z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E",
+  "clock": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128' width='128' height='128'%3E%3Cdefs%3E%3Cfilter id='blur' x='-50%25' y='-50%25' width='200%25' height='200%25'%3E%3CfeGaussianBlur stdDeviation='3.6'/%3E%3C/filter%3E%3ClinearGradient id='f1' gradientUnits='userSpaceOnUse' x1='37.6' y1='14.0' x2='90.4' y2='102.0'%3E%3Cstop offset='0' stop-color='%23f9c782'/%3E%3Cstop offset='.48' stop-color='%23F5A83C'/%3E%3Cstop offset='1' stop-color='%23d2903a'/%3E%3C/linearGradient%3E%3CclipPath id='c2'%3E%3Ccircle cx='64' cy='58' r='44'/%3E%3C/clipPath%3E%3CradialGradient id='s3'%3E%3Cstop offset='0' stop-color='%23885c36' stop-opacity='.5'/%3E%3Cstop offset='1' stop-color='%23885c36' stop-opacity='0'/%3E%3C/radialGradient%3E%3CradialGradient id='g4'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.66'/%3E%3Cstop offset='.5' stop-color='%23fff' stop-opacity='.2'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/radialGradient%3E%3ClinearGradient id='r5' gradientUnits='userSpaceOnUse' x1='0' y1='14.0' x2='0' y2='66.8'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.75'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/linearGradient%3E%3ClinearGradient id='f6' gradientUnits='userSpaceOnUse' x1='44.2' y1='25.0' x2='83.8' y2='91.0'%3E%3Cstop offset='0' stop-color='%23f7f5fd'/%3E%3Cstop offset='.48' stop-color='%23F3F0FC'/%3E%3Cstop offset='1' stop-color='%23d0ccdb'/%3E%3C/linearGradient%3E%3CclipPath id='c7'%3E%3Ccircle cx='64' cy='58' r='33'/%3E%3C/clipPath%3E%3CradialGradient id='s8'%3E%3Cstop offset='0' stop-color='%23868096' stop-opacity='.5'/%3E%3Cstop offset='1' stop-color='%23868096' stop-opacity='0'/%3E%3C/radialGradient%3E%3CradialGradient id='g9'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.66'/%3E%3Cstop offset='.5' stop-color='%23fff' stop-opacity='.2'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/radialGradient%3E%3ClinearGradient id='f10' gradientUnits='userSpaceOnUse' x1='61.3' y1='53.5' x2='66.7' y2='62.5'%3E%3Cstop offset='0' stop-color='%23f7a2a2'/%3E%3Cstop offset='.48' stop-color='%23F26D6D'/%3E%3Cstop offset='1' stop-color='%23cf5e63'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cellipse cx='64' cy='114' rx='40' ry='6' fill='%2307040d' opacity='0.55' filter='url(%23blur)'/%3E%3Cg fill='%237a5335' transform='translate(0 8)'%3E%3Ccircle cx='64' cy='58' r='44'/%3E%3C/g%3E%3Cg fill='%23815835' transform='translate(0 7)'%3E%3Ccircle cx='64' cy='58' r='44'/%3E%3C/g%3E%3Cg fill='%23885d36' transform='translate(0 6)'%3E%3Ccircle cx='64' cy='58' r='44'/%3E%3C/g%3E%3Cg fill='%238f6236' transform='translate(0 5)'%3E%3Ccircle cx='64' cy='58' r='44'/%3E%3C/g%3E%3Cg fill='%23966636' transform='translate(0 4)'%3E%3Ccircle cx='64' cy='58' r='44'/%3E%3C/g%3E%3Cg fill='%239e6b37' transform='translate(0 3)'%3E%3Ccircle cx='64' cy='58' r='44'/%3E%3C/g%3E%3Cg fill='%23a57037' transform='translate(0 2)'%3E%3Ccircle cx='64' cy='58' r='44'/%3E%3C/g%3E%3Cg fill='%23ac7538' transform='translate(0 1)'%3E%3Ccircle cx='64' cy='58' r='44'/%3E%3C/g%3E%3Cg fill='url(%23f1)'%3E%3Ccircle cx='64' cy='58' r='44'/%3E%3C/g%3E%3Cg clip-path='url(%23c2)'%3E%3Cellipse cx='90.4' cy='102.0' rx='54.6' ry='37.0' fill='url(%23s3)'/%3E%3Cellipse cx='49.9' cy='27.2' rx='44.0' ry='31.7' fill='url(%23g4)'/%3E%3Cg fill='none' stroke='url(%23r5)' stroke-width='2.6'%3E%3Ccircle cx='64' cy='58' r='44'/%3E%3C/g%3E%3C/g%3E%3Cg fill='%23a87338' opacity='1'%3E%3Ccircle cx='64' cy='59.5' r='34'/%3E%3C/g%3E%3Cg fill='url(%23f6)'%3E%3Ccircle cx='64' cy='58' r='33'/%3E%3C/g%3E%3Cg clip-path='url(%23c7)'%3E%3Cellipse cx='83.8' cy='91.0' rx='40.9' ry='27.7' fill='url(%23s8)'/%3E%3Cellipse cx='53.4' cy='34.9' rx='33.0' ry='23.8' fill='url(%23g9)'/%3E%3C/g%3E%3Cg fill='none' stroke-linecap='round' stroke-linejoin='round' stroke-width='3.4' stroke='%23BDB5DE'%3E%3Cpath d='M64 30v5'/%3E%3Cpath d='M92 58h-5'/%3E%3Cpath d='M64 86v-5'/%3E%3Cpath d='M36 58h5'/%3E%3C/g%3E%3Cg fill='none' stroke-linecap='round' stroke-linejoin='round' stroke-width='5.5' stroke='%232A2145'%3E%3Cpath d='M64 58 V38'/%3E%3Cpath d='M64 58 L78 66'/%3E%3C/g%3E%3Cg fill='%2379394b' transform='translate(0 1)'%3E%3Ccircle cx='64' cy='58' r='4.5'/%3E%3C/g%3E%3Cg fill='url(%23f10)'%3E%3Ccircle cx='64' cy='58' r='4.5'/%3E%3C/g%3E%3C/svg%3E",
+  "warning": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128' width='128' height='128'%3E%3Cdefs%3E%3Cfilter id='blur' x='-50%25' y='-50%25' width='200%25' height='200%25'%3E%3CfeGaussianBlur stdDeviation='3.6'/%3E%3C/filter%3E%3ClinearGradient id='f1' gradientUnits='userSpaceOnUse' x1='36.4' y1='14.0' x2='91.6' y2='96.0'%3E%3Cstop offset='0' stop-color='%23f9c782'/%3E%3Cstop offset='.48' stop-color='%23F5A83C'/%3E%3Cstop offset='1' stop-color='%23d2903a'/%3E%3C/linearGradient%3E%3CclipPath id='c2'%3E%3Cpath d='M64 14 L110 96 H18 Z'/%3E%3C/clipPath%3E%3CradialGradient id='s3'%3E%3Cstop offset='0' stop-color='%23885c36' stop-opacity='.5'/%3E%3Cstop offset='1' stop-color='%23885c36' stop-opacity='0'/%3E%3C/radialGradient%3E%3CradialGradient id='g4'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.66'/%3E%3Cstop offset='.5' stop-color='%23fff' stop-opacity='.2'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/radialGradient%3E%3ClinearGradient id='r5' gradientUnits='userSpaceOnUse' x1='0' y1='14.0' x2='0' y2='63.2'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.75'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/linearGradient%3E%3ClinearGradient id='f6' gradientUnits='userSpaceOnUse' x1='60.4' y1='76.0' x2='67.6' y2='88.0'%3E%3Cstop offset='0' stop-color='%23817461'/%3E%3Cstop offset='.48' stop-color='%233A2608'/%3E%3Cstop offset='1' stop-color='%2335220e'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cellipse cx='64' cy='114' rx='48' ry='6' fill='%2307040d' opacity='0.55' filter='url(%23blur)'/%3E%3Cg fill='%237a5335' stroke='%237a5335' stroke-width='14' stroke-linejoin='round' transform='translate(0 7)'%3E%3Cpath d='M64 14 L110 96 H18 Z'/%3E%3C/g%3E%3Cg fill='%23825935' stroke='%23825935' stroke-width='14' stroke-linejoin='round' transform='translate(0 6)'%3E%3Cpath d='M64 14 L110 96 H18 Z'/%3E%3C/g%3E%3Cg fill='%238a5e36' stroke='%238a5e36' stroke-width='14' stroke-linejoin='round' transform='translate(0 5)'%3E%3Cpath d='M64 14 L110 96 H18 Z'/%3E%3C/g%3E%3Cg fill='%23926436' stroke='%23926436' stroke-width='14' stroke-linejoin='round' transform='translate(0 4)'%3E%3Cpath d='M64 14 L110 96 H18 Z'/%3E%3C/g%3E%3Cg fill='%239b6937' stroke='%239b6937' stroke-width='14' stroke-linejoin='round' transform='translate(0 3)'%3E%3Cpath d='M64 14 L110 96 H18 Z'/%3E%3C/g%3E%3Cg fill='%23a36f37' stroke='%23a36f37' stroke-width='14' stroke-linejoin='round' transform='translate(0 2)'%3E%3Cpath d='M64 14 L110 96 H18 Z'/%3E%3C/g%3E%3Cg fill='%23ab7438' stroke='%23ab7438' stroke-width='14' stroke-linejoin='round' transform='translate(0 1)'%3E%3Cpath d='M64 14 L110 96 H18 Z'/%3E%3C/g%3E%3Cg fill='url(%23f1)' stroke='url(%23f1)' stroke-width='14' stroke-linejoin='round'%3E%3Cpath d='M64 14 L110 96 H18 Z'/%3E%3C/g%3E%3Cg clip-path='url(%23c2)'%3E%3Cellipse cx='91.6' cy='96.0' rx='57.0' ry='34.4' fill='url(%23s3)'/%3E%3Cellipse cx='49.3' cy='26.3' rx='46.0' ry='29.5' fill='url(%23g4)'/%3E%3Cg fill='none' stroke='url(%23r5)' stroke-width='2.6'%3E%3Cpath d='M64 14 L110 96 H18 Z'/%3E%3C/g%3E%3C/g%3E%3Cg fill='none' stroke-linecap='round' stroke-linejoin='round' stroke-width='9' stroke='%233A2608'%3E%3Cpath d='M64 44 V68'/%3E%3C/g%3E%3Cg fill='url(%23f6)'%3E%3Ccircle cx='64' cy='82' r='5.5'/%3E%3C/g%3E%3C/svg%3E"
+};
+</script>
+<script>
+'use strict';
+/* =========================================================
+   مصنع التطبيقات — واجهة H2APK على GitHub Pages
+   يرفع الكود والإعدادات إلى apps/<اسم>/ في المستودع بإيداع واحد،
+   فيبني GitHub Actions التطبيق، ثم تعرض الصفحة رابط التحميل.
+   ========================================================= */
+const ICON = window.H2_ICONS || {};
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+const svg = (d, w = 2) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+const S = {
+  file: svg('<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/>'),
+  folder: svg('<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>'),
+  eye: svg('<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>'),
+  plus: svg('<path d="M12 5v14M5 12h14"/>', 2.4),
+  close: svg('<path d="M18 6 6 18M6 6l12 12"/>', 2.2),
+  check: svg('<path d="M20 6 9 17l-5-5"/>', 3),
+  x: svg('<path d="M18 6 6 18M6 6l12 12"/>', 3),
+  refresh: svg('<path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/>'),
+  sun: svg('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'),
+  moon: svg('<path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/>'),
+  download: svg('<path d="M12 3v12M7 10l5 5 5-5M5 21h14"/>', 2.2),
+  ext: svg('<path d="M14 4h6v6M20 4l-9 9M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"/>'),
+  copy: svg('<rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15H4.5A1.5 1.5 0 0 1 3 13.5v-9A1.5 1.5 0 0 1 4.5 3h9A1.5 1.5 0 0 1 15 4.5V5"/>'),
+  image: svg('<rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/>'),
+  wand: svg('<path d="M15 4V2M15 16v-2M8 9h2M20 9h2M17.8 11.8 19 13M17.8 6.2 19 5M12.2 6.2 11 5M3 21l9-9"/>'),
+  rocket: svg('<path d="M4.5 16.5c-1.5 1.3-2 5-2 5s3.7-.5 5-2c.7-.8.7-2.1-.1-2.9a2.2 2.2 0 0 0-2.9-.1z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.9A12.9 12.9 0 0 1 22 2c0 2.7-.8 7.5-6 11a22.4 22.4 0 0 1-4 2z"/><path d="M9 12H4s.6-3 2-4c1.6-1.1 5 0 5 0M12 15v5s3-.6 4-2c1.1-1.6 0-5 0-5"/>'),
+  edit: svg('<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>')
+};
+const KEY_PREFS = 'h2apk.prefs.v1';
+const KEY_TOKEN = 'h2apk.token.v1';
+const PKG_RE = /^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$/;
+const HEX_RE = /^#[0-9a-fA-F]{6}$/;
+const CORE = new Set(['app.json', 'index.html', 'icon.png', 'splash.png']);
+
+/* ---------- الحالة ---------- */
+const st = {
+  mode: 'code', extras: [], removed: new Set(), icon: null, iconAuto: true,
+  splashMode: 'icon', splash: null, splashExisting: false, loadedSlug: null, pkgTouched: false, busy: false,
+  repoTree: new Map()
+};
+const conn = { owner: '', repo: '', token: '', branch: 'main', ok: false };
+
+/* ---------- أدوات ---------- */
+let toastTimer;
+function toast(msg, type = '') {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.className = 'show ' + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+function b64FromBytes(bytes) { let s = ''; for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000)); return btoa(s); }
+const b64Utf8 = str => b64FromBytes(new TextEncoder().encode(str));
+function utf8FromB64(b64) { const bin = atob(String(b64).replace(/\s/g, '')); const out = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i); return new TextDecoder().decode(out); }
+const fileToB64 = file => new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(String(fr.result).split(',')[1] || ''); fr.onerror = rej; fr.readAsDataURL(file); });
+const fmtSize = n => n < 1024 ? n + ' B' : (n < 1048576 ? (n / 1024).toFixed(n < 10240 ? 1 : 0) + ' KB' : (n / 1048576).toFixed(1) + ' MB');
+const b64Size = b64 => Math.floor((b64 || '').length * 3 / 4);
+const setSwitch = (el, on) => el.setAttribute('aria-checked', String(!!on));
+const switchOn = el => el.getAttribute('aria-checked') === 'true';
+const sw = key => $(`[data-key="${key}"]`);
+function hexMix(a, b, t) {
+  const p = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+  const A = p(a), B = p(b);
+  return '#' + A.map((v, i) => Math.round(v + (B[i] - v) * t).toString(16).padStart(2, '0')).join('');
+}
+function luminance(hex) { const [r, g, b] = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255); return 0.2126 * r + 0.7152 * g + 0.0722 * b; }
+function slugify(s) { return String(s || '').toLowerCase().normalize('NFKD').replace(/[^a-z0-9]/g, ''); }
+function hash36(s) { let h = 0; for (const c of String(s)) h = (h * 31 + c.charCodeAt(0)) | 0; return Math.abs(h).toString(36).slice(0, 4); }
+
+/* ---------- GitHub ---------- */
+const base = () => `/repos/${conn.owner}/${conn.repo}`;
+async function gh(path, opts = {}) {
+  const headers = { Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' };
+  if (conn.token) headers.Authorization = 'Bearer ' + conn.token;
+  const init = { method: opts.method || 'GET', headers, cache: 'no-store' };
+  if (opts.body) { headers['Content-Type'] = 'application/json'; init.body = JSON.stringify(opts.body); }
+  let r;
+  try { r = await fetch('https://api.github.com' + path, init); }
+  catch (e) { throw new Error('تعذّر الاتصال بـ GitHub. تحقّق من الإنترنت.'); }
+  if (r.status === 204) return null;
+  const text = await r.text();
+  let data = null; try { data = text ? JSON.parse(text) : null; } catch (e) {}
+  if (!r.ok) {
+    const msg = (data && data.message) || text || r.statusText;
+    const err = new Error(r.status === 401 ? 'رمز الوصول غير صالح أو منتهي الصلاحية.'
+      : r.status === 403 ? 'رمز الوصول لا يملك الصلاحية المطلوبة (' + msg + ').'
+      : r.status === 404 ? 'غير موجود، أو أن رمز الوصول لا يصل إلى هذا المستودع.'
+      : r.status === 409 ? 'المستودع فارغ أو في حالة تعارض (' + msg + ').'
+      : r.status === 422 ? 'رفض GitHub الطلب: ' + msg
+      : 'خطأ من GitHub (' + r.status + '): ' + msg);
+    err.status = r.status;
+    throw err;
+  }
+  return data;
+}
+function detectRepo() {
+  const h = location.hostname;
+  if (h.endsWith('.github.io')) {
+    const repo = location.pathname.split('/').filter(Boolean)[0];
+    if (repo) return { owner: h.split('.')[0], repo };
+  }
+  return { owner: 'elkandoussi1', repo: 'H2APK' };
+}
+function loadConn() {
+  const d = detectRepo();
+  conn.owner = d.owner; conn.repo = d.repo;
+  try {
+    const saved = JSON.parse(sessionStorage.getItem(KEY_TOKEN) || localStorage.getItem(KEY_TOKEN) || 'null');
+    if (saved && saved.token) { conn.token = saved.token; conn.owner = saved.owner || conn.owner; conn.repo = saved.repo || conn.repo; }
+  } catch (e) {}
+}
+function saveConn(remember) {
+  const data = JSON.stringify({ owner: conn.owner, repo: conn.repo, token: conn.token });
+  try {
+    sessionStorage.setItem(KEY_TOKEN, data);
+    if (remember) localStorage.setItem(KEY_TOKEN, data); else localStorage.removeItem(KEY_TOKEN);
+  } catch (e) {}
+}
+function forgetConn() { try { sessionStorage.removeItem(KEY_TOKEN); localStorage.removeItem(KEY_TOKEN); } catch (e) {} conn.token = ''; conn.ok = false; }
+function renderConn() {
+  const b = $('#btnConn');
+  b.classList.toggle('on', conn.ok);
+  $('#connText').textContent = conn.ok ? conn.owner + '/' + conn.repo : 'ربط حساب GitHub';
+  $('#repoLink').href = `https://github.com/${conn.owner}/${conn.repo}`;
+  $('#repoLink').textContent = `${conn.owner}/${conn.repo}`;
+}
+async function verifyConn() {
+  const repo = await gh(base());
+  conn.branch = repo.default_branch || 'main';
+  await gh(base() + '/actions/workflows?per_page=50');
+  conn.ok = true;
+  renderConn();
+  return repo;
+}
+
+/* ---------- نافذة الربط ---------- */
+function openModal(id) { $('#' + id).classList.add('open'); document.body.style.overflow = 'hidden'; }
+function closeModal(id) { $('#' + id).classList.remove('open'); if (!$$('.modal.open').length) document.body.style.overflow = ''; }
+document.addEventListener('click', e => {
+  if (e.target.closest('[data-close]')) closeModal(e.target.closest('.modal').id);
+  else if (e.target.classList && e.target.classList.contains('modal')) closeModal(e.target.id);
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { const m = $$('.modal.open').pop(); if (m) closeModal(m.id); } });
+function openToken() {
+  $('#tkOwner').value = conn.owner; $('#tkRepo').value = conn.repo; $('#tkToken').value = conn.token;
+  $('#tkRepoName').textContent = conn.repo;
+  setSwitch($('#tkRemember'), !!localStorage.getItem(KEY_TOKEN));
+  $('#tkStatus').className = 'hint'; $('#tkStatus').textContent = conn.ok ? 'متصل ✓' : '';
+  openModal('modalToken');
+  setTimeout(() => (conn.token ? $('#tkSave') : $('#tkToken')).focus(), 250);
+}
+$('#btnConn').addEventListener('click', openToken);
+$('#tkRemember').addEventListener('click', e => setSwitch(e.currentTarget, !switchOn(e.currentTarget)));
+$('#tkRepo').addEventListener('input', e => { $('#tkRepoName').textContent = e.target.value.trim() || 'H2APK'; });
+$('#tkSave').addEventListener('click', async () => {
+  conn.owner = $('#tkOwner').value.trim(); conn.repo = $('#tkRepo').value.trim(); conn.token = $('#tkToken').value.trim();
+  const s = $('#tkStatus');
+  if (!conn.owner || !conn.repo || !conn.token) { s.className = 'hint bad'; s.textContent = 'املأ كل الحقول.'; return; }
+  const btn = $('#tkSave'); btn.disabled = true; s.className = 'hint'; s.textContent = 'جارٍ التحقق…';
+  try {
+    await verifyConn();
+    saveConn(switchOn($('#tkRemember')));
+    s.textContent = 'متصل ✓';
+    closeModal('modalToken');
+    toast('تم الربط بـ ' + conn.owner + '/' + conn.repo, 'success');
+    loadApps();
+    if (!st.pkgTouched) suggestPkg();
+  } catch (e) { conn.ok = false; renderConn(); s.className = 'hint bad'; s.textContent = e.message; }
+  finally { btn.disabled = false; }
+});
+$('#tkForget').addEventListener('click', () => { forgetConn(); renderConn(); $('#tkToken').value = ''; $('#tkStatus').textContent = 'تم نسيان الرمز.'; renderApps([]); });
+
+/* ---------- المظهر ---------- */
+function applyTheme(t) {
+  document.documentElement.dataset.theme = t;
+  $('meta[name="theme-color"]').content = t === 'light' ? '#F5F3FB' : '#110D1D';
+  $('#btnTheme').innerHTML = t === 'light' ? S.moon : S.sun;
+}
+$('#btnTheme').addEventListener('click', () => {
+  const t = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+  applyTheme(t);
+  try { localStorage.setItem(KEY_PREFS, JSON.stringify({ theme: t })); } catch (e) {}
+});
+
+/* ---------- المصدر ---------- */
+function setMode(m) {
+  st.mode = m;
+  $$('#modeSeg [data-mode]').forEach(b => b.setAttribute('aria-checked', String(b.dataset.mode === m)));
+  $('#srcCode').hidden = m !== 'code';
+  $('#srcUrl').hidden = m !== 'url';
+}
+$('#modeSeg').addEventListener('click', e => { const b = e.target.closest('[data-mode]'); if (b) setMode(b.dataset.mode); });
+function updateCodeInfo() {
+  const v = $('#code').value;
+  $('#codeInfo').textContent = v ? fmtSize(new TextEncoder().encode(v).length) + ' · ' + v.split('\n').length + ' سطر' : '';
+}
+$('#code').addEventListener('input', updateCodeInfo);
+$('#code').addEventListener('keydown', e => {
+  if (e.key === 'Tab' && !e.shiftKey && !e.ctrlKey && !e.metaKey) {
+    e.preventDefault();
+    const t = e.target, s = t.selectionStart;
+    t.setRangeText('  ', s, t.selectionEnd, 'end');
+    updateCodeInfo();
+  }
+});
+function titleFromHtml(html) { const m = /<title[^>]*>([^<]{1,60})<\/title>/i.exec(html || ''); return m ? m[1].split(/[—|–-]/)[0].trim() : ''; }
+function maybeFillName(html) {
+  if ($('#appName').value.trim()) return;
+  const t = titleFromHtml(html);
+  if (t) { $('#appName').value = t; onNameChange(); }
+}
+$('#btnOpenHtml').addEventListener('click', () => { $('#fHtml').value = ''; $('#fHtml').click(); });
+$('#fHtml').addEventListener('change', async e => {
+  const f = e.target.files[0]; if (!f) return;
+  $('#code').value = await f.text(); updateCodeInfo(); maybeFillName($('#code').value);
+  toast('تم فتح ' + f.name, 'success');
+});
+$('#btnOpenFolder').addEventListener('click', () => { $('#fFolder').value = ''; $('#fFolder').click(); });
+$('#fFolder').addEventListener('change', async e => {
+  const files = Array.from(e.target.files || []);
+  if (!files.length) return;
+  let foundIndex = false, added = 0;
+  for (const f of files) {
+    const parts = (f.webkitRelativePath || f.name).split('/');
+    const rel = parts.length > 1 ? parts.slice(1).join('/') : parts[0];
+    if (!rel || rel.split('/').some(p => p.startsWith('.') || p === 'node_modules')) continue;
+    if (rel.toLowerCase() === 'index.html') { $('#code').value = await f.text(); foundIndex = true; continue; }
+    if (CORE.has(rel)) continue;
+    await addExtra(rel, f); added++;
+  }
+  updateCodeInfo(); renderExtras();
+  if (foundIndex) maybeFillName($('#code').value);
+  toast(foundIndex ? `تم استيراد المشروع: index.html و${added} ملفاً إضافياً` : `لم يُعثر على index.html في جذر المجلد (أُضيف ${added} ملفاً)`, foundIndex ? 'success' : 'error');
+});
+$('#btnAddFiles').addEventListener('click', () => { $('#fFiles').value = ''; $('#fFiles').click(); });
+$('#fFiles').addEventListener('change', async e => {
+  for (const f of Array.from(e.target.files || [])) {
+    const rel = guessPath(f.name);
+    if (f.name.toLowerCase() === 'index.html') { $('#code').value = await f.text(); updateCodeInfo(); continue; }
+    await addExtra(rel, f);
+  }
+  renderExtras();
+});
+const guessPath = name => name;
+async function addExtra(path, file) {
+  path = path.replace(/^\/+/, '');
+  const b64 = await fileToB64(file);
+  const i = st.extras.findIndex(x => x.path === path);
+  const item = { path, b64, size: file.size, existing: false };
+  if (i >= 0) st.extras[i] = item; else st.extras.push(item);
+  st.removed.delete(path);
+}
+function renderExtras() {
+  $('#extraFiles').innerHTML = st.extras.map((x, i) =>
+    `<div class="file"><span class="p">${esc(x.path)}</span>${x.existing ? '<span class="tag">في المستودع</span>' : ''}<span class="s">${fmtSize(x.size || 0)}</span><button class="rm" type="button" data-rm="${i}" aria-label="إزالة ${esc(x.path)}">${S.close}</button></div>`).join('');
+}
+$('#extraFiles').addEventListener('click', e => {
+  const b = e.target.closest('[data-rm]'); if (!b) return;
+  const x = st.extras.splice(Number(b.dataset.rm), 1)[0];
+  if (x && x.existing) st.removed.add(x.path);
+  renderExtras();
+});
+$('#btnPreview').addEventListener('click', () => {
+  if (!$('#code').value.trim()) { toast('اكتب الكود أولاً', 'error'); return; }
+  $('#previewFrame').srcdoc = $('#code').value;
+  openModal('modalPreview');
+});
+$('#url').addEventListener('input', e => {
+  const v = e.target.value.trim();
+  if (!$('#appName').value.trim() || !st.nameTouched) {
+    try { const h = new URL(v).hostname.replace(/^www\./, ''); if (h && !st.nameTouched) { $('#appName').value = h.split('.')[0].replace(/^./, c => c.toUpperCase()); onNameChange(true); } } catch (err) {}
+  }
+});
+
+/* ---------- الهوية ---------- */
+function suggestPkg() {
+  const owner = slugify(conn.owner).replace(/\d+$/, '') || 'app';
+  const name = $('#appName').value.trim();
+  let s = slugify(name);
+  if (!s || !/^[a-z]/.test(s)) s = 'app' + (s || hash36(name || 'app'));
+  $('#pkg').value = `com.${owner}.${s.slice(0, 30)}`;
+  validatePkg();
+}
+function validatePkg() {
+  const v = $('#pkg').value.trim();
+  const ok = PKG_RE.test(v);
+  $('#pkg').classList.toggle('bad', !!v && !ok);
+  const h = $('#pkgHint');
+  h.className = 'hint' + (v && !ok ? ' bad' : '');
+  h.textContent = v && !ok ? 'حروف لاتينية صغيرة وأرقام ونقاط فقط، مثل com.elkandoussi.myapp' : '';
+  const slug = currentSlug();
+  $('#slugHint').innerHTML = slug ? `يُحفظ التطبيق في المستودع داخل <code dir="ltr">apps/${esc(slug)}/</code>` : '';
+  return ok;
+}
+const currentSlug = () => { const v = $('#pkg').value.trim(); return PKG_RE.test(v) ? v.split('.').pop().replace(/_/g, '') : ''; };
+function onNameChange(fromUrl) {
+  if (!fromUrl) st.nameTouched = true;
+  if (!st.pkgTouched) suggestPkg();
+  if (st.iconAuto) refreshAutoIcon();
+}
+$('#appName').addEventListener('input', () => onNameChange());
+$('#pkg').addEventListener('input', () => { st.pkgTouched = true; validatePkg(); });
+
+let autoTimer;
+function refreshAutoIcon() { clearTimeout(autoTimer); autoTimer = setTimeout(async () => { st.icon = await makeAutoIcon(); showIcon(); }, 200); }
+async function makeAutoIcon() {
+  const c = document.createElement('canvas'); c.width = c.height = 512;
+  const x = c.getContext('2d');
+  let baseHex = $('#themeHex').value.trim();
+  if (!HEX_RE.test(baseHex) || luminance(baseHex) < 0.09) baseHex = '#6A57DE';
+  const g = x.createLinearGradient(0, 0, 512, 512);
+  g.addColorStop(0, hexMix(baseHex, '#ffffff', 0.32)); g.addColorStop(0.55, baseHex); g.addColorStop(1, hexMix(baseHex, '#000000', 0.38));
+  x.fillStyle = g; x.fillRect(0, 0, 512, 512);
+  const r = x.createRadialGradient(170, 110, 10, 170, 110, 340);
+  r.addColorStop(0, 'rgba(255,255,255,.34)'); r.addColorStop(1, 'rgba(255,255,255,0)');
+  x.fillStyle = r; x.fillRect(0, 0, 512, 512);
+  const letter = ($('#appName').value.trim().charAt(0) || 'A').toUpperCase();
+  try { await document.fonts.load('800 240px Cairo'); } catch (e) {}
+  x.font = "800 240px Cairo, 'El Messiri', system-ui, sans-serif";
+  x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.fillStyle = 'rgba(0,0,0,.28)'; x.fillText(letter, 256, 282);
+  x.fillStyle = '#ffffff'; x.fillText(letter, 256, 270);
+  return c.toDataURL('image/png').split(',')[1];
+}
+async function imageToPng(file, mode) {
+  const url = URL.createObjectURL(file);
+  try {
+    const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = () => rej(new Error('صورة غير صالحة')); i.src = url; });
+    const c = document.createElement('canvas'); c.width = c.height = 512;
+    const x = c.getContext('2d');
+    const w = img.naturalWidth || 512, h = img.naturalHeight || 512;
+    const s = mode === 'cover' ? Math.max(512 / w, 512 / h) : Math.min(512 / w, 512 / h);
+    x.drawImage(img, (512 - w * s) / 2, (512 - h * s) / 2, w * s, h * s);
+    return c.toDataURL('image/png').split(',')[1];
+  } finally { URL.revokeObjectURL(url); }
+}
+function showIcon() {
+  $('#iconPrev').src = st.icon ? 'data:image/png;base64,' + st.icon : '';
+  $('#iconHint').textContent = st.iconAuto ? 'أيقونة مولّدة من اسم التطبيق ولونه. ارفع صورتك لتغييرها.' : 'أيقونتك المرفوعة (512×512).';
+}
+$('#btnIcon').addEventListener('click', () => { $('#fIcon').value = ''; $('#fIcon').click(); });
+$('#fIcon').addEventListener('change', async e => {
+  const f = e.target.files[0]; if (!f) return;
+  try { st.icon = await imageToPng(f, 'cover'); st.iconAuto = false; showIcon(); }
+  catch (err) { toast(err.message, 'error'); }
+});
+$('#btnIconAuto').addEventListener('click', () => { st.iconAuto = true; refreshAutoIcon(); });
+
+/* ---------- المظهر وشاشة البداية ---------- */
+function bindColor(pick, hex, onChange) {
+  pick.addEventListener('input', () => { hex.value = pick.value.toUpperCase(); hex.classList.remove('bad'); onChange && onChange(); });
+  hex.addEventListener('input', () => {
+    const v = hex.value.trim();
+    const ok = HEX_RE.test(v);
+    hex.classList.toggle('bad', !ok);
+    if (ok) { pick.value = v; onChange && onChange(); }
+  });
+}
+bindColor($('#themeColor'), $('#themeHex'), () => { if (st.iconAuto) refreshAutoIcon(); });
+bindColor($('#splashColor'), $('#splashHex'));
+$$('.sw[data-key]').forEach(b => b.addEventListener('click', () => {
+  setSwitch(b, !switchOn(b));
+  if (b.dataset.key === 'splash_enabled') $('#splashBox').hidden = !switchOn(b);
+}));
+function setSplashMode(m) {
+  st.splashMode = m;
+  $$('#splashSeg [data-splash]').forEach(b => b.setAttribute('aria-checked', String(b.dataset.splash === m)));
+  $('#splashCustom').hidden = m !== 'custom';
+}
+$('#splashSeg').addEventListener('click', e => { const b = e.target.closest('[data-splash]'); if (b) setSplashMode(b.dataset.splash); });
+$('#btnSplash').addEventListener('click', () => { $('#fSplash').value = ''; $('#fSplash').click(); });
+$('#fSplash').addEventListener('change', async e => {
+  const f = e.target.files[0]; if (!f) return;
+  try { st.splash = await imageToPng(f, 'contain'); st.splashExisting = false; $('#splashPrev').src = 'data:image/png;base64,' + st.splash; }
+  catch (err) { toast(err.message, 'error'); }
+});
+function setAnim(a) { $$('#animSeg [data-anim]').forEach(b => b.setAttribute('aria-checked', String(b.dataset.anim === a))); }
+$('#animSeg').addEventListener('click', e => { const b = e.target.closest('[data-anim]'); if (b) setAnim(b.dataset.anim); });
+const showDur = () => { $('#splashDurV').textContent = (Number($('#splashDur').value) / 1000).toFixed(1) + ' ث'; };
+const showSize = () => { $('#splashSizeV').textContent = $('#splashSize').value + '%'; };
+$('#splashDur').addEventListener('input', showDur);
+$('#splashSize').addEventListener('input', showSize);
+
+/* ---------- جمع الإعدادات ---------- */
+function collectConfig() {
+  const cfg = {
+    app_name: $('#appName').value.trim(),
+    package_name: $('#pkg').value.trim(),
+    version: $('#ver').value.trim() || '1.0',
+    version_code: Math.max(1, parseInt($('#verCode').value, 10) || 1),
+    theme_color: HEX_RE.test($('#themeHex').value.trim()) ? $('#themeHex').value.trim().toUpperCase() : '#110D1D',
+    transparent_nav: switchOn(sw('transparent_nav')),
+    splash_enabled: switchOn(sw('splash_enabled')),
+    splash_color: HEX_RE.test($('#splashHex').value.trim()) ? $('#splashHex').value.trim().toUpperCase() : '#110D1D',
+    splash_duration: Number($('#splashDur').value),
+    splash_image_size: Number($('#splashSize').value),
+    splash_animation: $('#animSeg [aria-checked="true"]').dataset.anim,
+    splash_use_icon: st.splashMode === 'icon',
+    hide_scrollbars: switchOn(sw('hide_scrollbars')),
+    zoom_enabled: switchOn(sw('zoom_enabled')),
+    pull_refresh: switchOn(sw('pull_refresh')),
+    disable_copy_text: switchOn(sw('disable_copy_text')),
+    min_sdk: Number($('#minSdk').value),
+    target_sdk: Number($('#targetSdk').value)
+  };
+  if (st.mode === 'url') {
+    cfg.url = $('#url').value.trim();
+    cfg.block_ads = switchOn(sw('block_ads'));
+    cfg.adguard_dns = switchOn(sw('adguard_dns'));
+  }
+  return cfg;
+}
+function validate() {
+  const fail = (el, msg) => { toast(msg, 'error'); if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(() => el.focus(), 300); } return false; };
+  if (st.mode === 'code') {
+    const code = $('#code').value.trim();
+    if (!code) return fail($('#code'), 'ضع كود الصفحة الرئيسية أولاً');
+    if (!/<[a-z!]/i.test(code)) return fail($('#code'), 'لا يبدو هذا كود HTML');
+  } else {
+    try { const u = new URL($('#url').value.trim()); if (!/^https?:$/.test(u.protocol)) throw 0; }
+    catch (e) { return fail($('#url'), 'أدخل رابطاً صحيحاً يبدأ بـ https://'); }
+  }
+  if (!$('#appName').value.trim()) return fail($('#appName'), 'أدخل اسم التطبيق');
+  if (!validatePkg()) return fail($('#pkg'), 'المعرّف غير صالح');
+  if (st.splashMode === 'custom' && switchOn(sw('splash_enabled')) && !st.splash && !st.splashExisting) return fail($('#btnSplash'), 'اختر صورة شاشة البداية أو استعمل الأيقونة');
+  return true;
+}
+
+/* ---------- الإيداع في المستودع ---------- */
+async function commitFiles(slug, files, deletions, message, onProgress) {
+  const ref = await gh(`${base()}/git/ref/heads/${conn.branch}`);
+  const parent = ref.object.sha;
+  const pc = await gh(`${base()}/git/commits/${parent}`);
+  const tree = [];
+  let n = 0;
+  for (const f of files) {
+    onProgress && onProgress(++n, files.length, f.path);
+    const blob = await gh(`${base()}/git/blobs`, { method: 'POST', body: { content: f.b64, encoding: 'base64' } });
+    tree.push({ path: `apps/${slug}/${f.path}`, mode: '100644', type: 'blob', sha: blob.sha });
+  }
+  deletions.forEach(p => tree.push({ path: `apps/${slug}/${p}`, mode: '100644', type: 'blob', sha: null }));
+  const t = await gh(`${base()}/git/trees`, { method: 'POST', body: { base_tree: pc.tree.sha, tree } });
+  const c = await gh(`${base()}/git/commits`, { method: 'POST', body: { message, tree: t.sha, parents: [parent] } });
+  await gh(`${base()}/git/refs/heads/${conn.branch}`, { method: 'PATCH', body: { sha: c.sha } });
+  return c;
+}
+async function existingConfig(slug) {
+  try {
+    const f = await gh(`${base()}/contents/apps/${slug}/app.json?ref=${conn.branch}`);
+    return JSON.parse(utf8FromB64(f.content));
+  } catch (e) { if (e.status === 404) return null; throw e; }
+}
+
+/* ---------- عرض التقدّم ---------- */
+let progTimer, progStart;
+const STEP_SKIP = /^(Set up job|Complete job|Post )/;
+let steps = [];
+function renderSteps() {
+  $('#steps').innerHTML = steps.map(s => {
+    const mark = s.state === 'done' ? S.check : (s.state === 'fail' ? S.x : '');
+    return `<li class="${s.state}"><span class="st">${mark}</span><span>${esc(s.label)}</span></li>`;
+  }).join('');
+}
+function setStep(id, state, label) {
+  const s = steps.find(x => x.id === id);
+  if (s) { s.state = state; if (label) s.label = label; }
+  renderSteps();
+}
+function startProgress(title) {
+  const p = $('#progress');
+  p.hidden = false;
+  $('#progTitle').textContent = title;
+  $('#result').innerHTML = '';
+  steps = [
+    { id: 'upload', label: 'رفع الملفات إلى المستودع', state: 'run' },
+    { id: 'wait', label: 'انتظار بدء البناء على GitHub', state: '' }
+  ];
+  renderSteps();
+  progStart = Date.now();
+  clearInterval(progTimer);
+  progTimer = setInterval(() => {
+    const s = Math.floor((Date.now() - progStart) / 1000);
+    $('#progTime').textContent = Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+  }, 500);
+  setTimeout(() => p.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
+}
+function stopProgress() { clearInterval(progTimer); }
+function mergeJobSteps(jobs) {
+  const fixed = steps.filter(s => s.id === 'upload' || s.id === 'wait');
+  const live = [];
+  (jobs || []).forEach(j => (j.steps || []).forEach(s => {
+    if (STEP_SKIP.test(s.name)) return;
+    const state = s.status === 'completed'
+      ? (s.conclusion === 'success' ? 'done' : (s.conclusion === 'skipped' ? 'skip' : 'fail'))
+      : (s.status === 'in_progress' ? 'run' : '');
+    live.push({ id: 'gh-' + s.number, label: s.name, state });
+  }));
+  steps = fixed.concat(live);
+  renderSteps();
+}
+
+/* ---------- التوليد ---------- */
+async function generate() {
+  if (st.busy) return;
+  if (!conn.ok) { toast('اربط حسابك على GitHub أولاً', 'error'); openToken(); return; }
+  if (!validate()) return;
+  st.busy = true;
+  const btn = $('#btnGenerate');
+  btn.disabled = true;
+  try {
+    const slug = currentSlug();
+    const cfg = collectConfig();
+    const prev = await existingConfig(slug);
+    if (prev && st.loadedSlug !== slug) {
+      const ok = confirm(`يوجد تطبيق محفوظ باسم المجلد «${slug}» (${prev.app_name || slug}). هل تريد استبداله بهذا التطبيق؟`);
+      if (!ok) return;
+    }
+    if (prev && Number(prev.version_code || 0) >= cfg.version_code) {
+      cfg.version_code = Number(prev.version_code) + 1;
+      $('#verCode').value = cfg.version_code;
+    }
+    if (!st.icon) st.icon = await makeAutoIcon();
+    const files = [{ path: 'app.json', b64: b64Utf8(JSON.stringify(cfg, null, 2) + '\n') }];
+    if (st.mode === 'code') files.push({ path: 'index.html', b64: b64Utf8($('#code').value) });
+    files.push({ path: 'icon.png', b64: st.icon });
+    if (st.splashMode === 'custom' && st.splash) files.push({ path: 'splash.png', b64: st.splash });
+    st.extras.filter(x => !x.existing).forEach(x => files.push({ path: x.path, b64: x.b64 }));
+    const total = files.reduce((n, f) => n + b64Size(f.b64), 0);
+    if (total > 90 * 1048576) throw new Error('حجم الملفات كبير جداً (' + fmtSize(total) + '). الحد الأقصى نحو 90 ميغابايت.');
+    const deletions = [...st.removed];
+
+    startProgress('جارٍ توليد «' + cfg.app_name + '»');
+    const commit = await commitFiles(slug, files, deletions, `توليد ${cfg.app_name} ${cfg.version} من مصنع التطبيقات`,
+      (i, n, p) => setStep('upload', 'run', `رفع الملفات إلى المستودع (${i}/${n}: ${p})`));
+    setStep('upload', 'done', 'رفع الملفات إلى المستودع (' + fmtSize(total) + ')');
+    st.loadedSlug = slug;
+    st.extras.forEach(x => { x.existing = true; });
+    st.removed.clear();
+    renderExtras();
+
+    setStep('wait', 'run');
+    let run = null;
+    for (let i = 0; i < 45 && !run; i++) {
+      const r = await gh(`${base()}/actions/runs?head_sha=${commit.sha}&per_page=10`);
+      run = (r.workflow_runs || []).find(x => /build-apk\.ya?ml$/.test(x.path || '') || /APK/.test(x.name || ''));
+      if (!run) await sleep(4000);
+    }
+    if (!run) throw new Error('لم يبدأ البناء على GitHub بعد 3 دقائق. تأكد أن Actions مفعّلة في المستودع، ثم افتح تبويب Actions.');
+    setStep('wait', 'done', 'بدأ البناء على GitHub (رقم ' + run.run_number + ')');
+
+    const deadline = Date.now() + 30 * 60000;
+    while (Date.now() < deadline) {
+      const [r, j] = await Promise.all([gh(`${base()}/actions/runs/${run.id}`), gh(`${base()}/actions/runs/${run.id}/jobs`)]);
+      run = r;
+      mergeJobSteps(j.jobs);
+      if (run.status === 'completed') break;
+      await sleep(4000);
+    }
+    if (run.status !== 'completed') throw new Error('استغرق البناء وقتاً طويلاً. تابعه من صفحة Actions.');
+    if (run.conclusion !== 'success') {
+      showError('فشل البناء على GitHub. افتح السجل لمعرفة السبب.', run.html_url);
+      return;
+    }
+    let rel = null;
+    for (let i = 0; i < 8 && !rel; i++) {
+      try { rel = await gh(`${base()}/releases/tags/build-${run.run_number}`); } catch (e) { await sleep(3000); }
+    }
+    showResult(cfg, rel, run);
+    loadApps();
+  } catch (e) {
+    console.error(e);
+    if (!$('#progress').hidden) showError(e.message);
+    else toast(e.message, 'error');
+  } finally {
+    st.busy = false; btn.disabled = false; stopProgress();
+  }
+}
+$('#btnGenerate').addEventListener('click', generate);
+
+function showError(msg, logUrl) {
+  stopProgress();
+  $('#progTitle').textContent = 'تعذّر التوليد';
+  steps.forEach(s => { if (s.state === 'run') s.state = 'fail'; });
+  renderSteps();
+  $('#result').innerHTML = `<div class="err"><img class="i3d" src="${ICON.warning || ''}" width="34" height="34" alt=""><span>${esc(msg)}</span></div>` +
+    (logUrl ? `<div class="linkrow"><a class="tbtn" href="${esc(logUrl)}" target="_blank" rel="noopener">${S.ext}سجل البناء</a></div>` : '');
+}
+function showResult(cfg, rel, run) {
+  $('#progTitle').textContent = 'التطبيق جاهز';
+  const assets = rel ? rel.assets.slice().sort((a, b) => (a.name.endsWith('.aab') ? 1 : 0) - (b.name.endsWith('.aab') ? 1 : 0)) : [];
+  const main = assets.find(a => a.name.endsWith('.apk'));
+  let html = `<div class="ok"><img class="i3d" src="${ICON.appbuild || ''}" width="46" height="46" alt=""><div style="flex:1;min-width:0"><div style="font-weight:800">«${esc(cfg.app_name)}» — الإصدار ${esc(cfg.version)}</div><div style="font-size:12.5px;color:var(--muted)">${main ? esc(main.name) + ' · ' + fmtSize(main.size) : 'لم يُعثر على الملف في Releases'}</div></div></div>`;
+  if (main) html += `<a class="btn btn-ok press" href="${esc(main.browser_download_url)}">${S.download}تحميل التطبيق (APK)</a>`;
+  assets.filter(a => a !== main).forEach(a => { html += `<a class="btn btn-ghost press" href="${esc(a.browser_download_url)}">${S.download}${esc(a.name)} · ${fmtSize(a.size)}</a>`; });
+  html += `<div class="linkrow">${main ? `<button class="tbtn press" type="button" data-copylink="${esc(main.browser_download_url)}">${S.copy}نسخ الرابط للهاتف</button>` : ''}${rel ? `<a class="tbtn" href="${esc(rel.html_url)}" target="_blank" rel="noopener">${S.ext}صفحة الإصدار</a>` : ''}<a class="tbtn" href="${esc(run.html_url)}" target="_blank" rel="noopener">${S.ext}سجل البناء</a></div>`;
+  $('#result').innerHTML = html;
+  toast('التطبيق جاهز للتحميل', 'success');
+}
+$('#result').addEventListener('click', async e => {
+  const b = e.target.closest('[data-copylink]'); if (!b) return;
+  try { await navigator.clipboard.writeText(b.dataset.copylink); toast('تم نسخ الرابط', 'success'); }
+  catch (err) { prompt('انسخ الرابط:', b.dataset.copylink); }
+});
+
+/* ---------- تطبيقاتي ---------- */
+async function loadApps() {
+  if (!conn.ok) return;
+  $('#apps').innerHTML = '<p class="empty">جارٍ التحميل…</p>';
+  try {
+    const [tree, rels] = await Promise.all([
+      gh(`${base()}/git/trees/${conn.branch}?recursive=1`),
+      gh(`${base()}/releases?per_page=60`).catch(() => [])
+    ]);
+    st.repoTree = new Map();
+    (tree.tree || []).forEach(it => {
+      const m = /^apps\/([^/]+)\/(.+)$/.exec(it.path);
+      if (m && it.type === 'blob') { if (!st.repoTree.has(m[1])) st.repoTree.set(m[1], []); st.repoTree.get(m[1]).push({ path: m[2], size: it.size, sha: it.sha }); }
+    });
+    const items = await Promise.all([...st.repoTree.keys()].map(async slug => {
+      const files = st.repoTree.get(slug);
+      const cfgF = files.find(f => f.path === 'app.json');
+      const iconF = files.find(f => f.path === 'icon.png');
+      let cfg = {}, icon = '';
+      try { if (cfgF) cfg = JSON.parse(utf8FromB64((await gh(`${base()}/git/blobs/${cfgF.sha}`)).content)); } catch (e) {}
+      try { if (iconF) icon = 'data:image/png;base64,' + (await gh(`${base()}/git/blobs/${iconF.sha}`)).content.replace(/\s/g, ''); } catch (e) {}
+      let asset = null, relDate = '';
+      for (const r of rels || []) {
+        const a = (r.assets || []).find(x => x.name.startsWith(slug + '-v') && x.name.endsWith('.apk'));
+        if (a) { asset = a; relDate = r.published_at || r.created_at; break; }
+      }
+      return { slug, cfg, icon, asset, relDate };
+    }));
+    renderApps(items);
+  } catch (e) { $('#apps').innerHTML = `<p class="empty">${esc(e.message)}</p>`; }
+}
+function renderApps(items) {
+  if (!conn.ok) { $('#apps').innerHTML = '<p class="empty">اربط حسابك على GitHub لعرض تطبيقاتك.</p>'; return; }
+  if (!items.length) { $('#apps').innerHTML = '<p class="empty">لا توجد تطبيقات بعد. ولّد أول تطبيق من الأعلى.</p>'; return; }
+  items.sort((a, b) => (b.relDate || '').localeCompare(a.relDate || ''));
+  $('#apps').innerHTML = items.map(it => {
+    const name = it.cfg.app_name || it.slug;
+    const date = it.relDate ? new Date(it.relDate).toLocaleDateString('ar-MA-u-nu-latn', { day: 'numeric', month: 'long', year: 'numeric' }) : 'لم يُبنَ بعد';
+    const kind = it.cfg.url ? 'موقع' : 'كود';
+    return `<div class="app"><span class="ic">${it.icon ? `<img src="${it.icon}" alt="">` : ''}</span>
+      <div class="txt"><div class="t">${esc(name)}</div><div class="d">${kind} · الإصدار ${esc(it.cfg.version || '—')} · ${esc(date)}</div></div>
+      <div class="acts">${it.asset ? `<a class="tbtn press" href="${esc(it.asset.browser_download_url)}" aria-label="تحميل ${esc(name)}">${S.download}<span>تحميل</span></a>` : ''}<button class="tbtn press" type="button" data-edit="${esc(it.slug)}" aria-label="تعديل ${esc(name)}">${S.edit}<span>تعديل</span></button></div></div>`;
+  }).join('');
+}
+$('#btnReload').addEventListener('click', loadApps);
+$('#btnNew').addEventListener('click', () => {
+  resetForm(true); suggestPkg(); refreshAutoIcon();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  $('#progress').hidden = true;
+  toast('نموذج جديد جاهز');
+});
+$('#apps').addEventListener('click', e => { const b = e.target.closest('[data-edit]'); if (b) loadApp(b.dataset.edit); });
+
+async function loadApp(slug) {
+  const files = st.repoTree.get(slug) || [];
+  const blob = async p => { const f = files.find(x => x.path === p); return f ? (await gh(`${base()}/git/blobs/${f.sha}`)).content.replace(/\s/g, '') : null; };
+  try {
+    toast('جارٍ تحميل التطبيق…');
+    const cfgB = await blob('app.json');
+    const cfg = cfgB ? JSON.parse(utf8FromB64(cfgB)) : {};
+    resetForm(false);
+    $('#appName').value = cfg.app_name || slug; st.nameTouched = true;
+    $('#pkg').value = cfg.package_name || ('com.' + (slugify(conn.owner).replace(/\d+$/, '') || 'app') + '.' + slug); st.pkgTouched = true; validatePkg();
+    $('#ver').value = cfg.version || '1.0';
+    $('#verCode').value = Number(cfg.version_code || 0) + 1;
+    if (cfg.theme_color) { $('#themeHex').value = cfg.theme_color; $('#themeColor').value = cfg.theme_color; }
+    if (cfg.splash_color) { $('#splashHex').value = cfg.splash_color; $('#splashColor').value = cfg.splash_color; }
+    ['transparent_nav', 'splash_enabled', 'hide_scrollbars', 'zoom_enabled', 'pull_refresh', 'disable_copy_text', 'block_ads', 'adguard_dns']
+      .forEach(k => { if (k in cfg) setSwitch(sw(k), cfg[k]); });
+    $('#splashBox').hidden = !switchOn(sw('splash_enabled'));
+    if (cfg.splash_duration) { $('#splashDur').value = cfg.splash_duration; showDur(); }
+    if (cfg.splash_image_size) { $('#splashSize').value = cfg.splash_image_size; showSize(); }
+    setAnim(cfg.splash_animation === 'slide' ? 'slide' : 'fade');
+    if (cfg.min_sdk) $('#minSdk').value = String(cfg.min_sdk);
+    if (cfg.target_sdk) $('#targetSdk').value = String(cfg.target_sdk);
+    if (cfg.url) { setMode('url'); $('#url').value = cfg.url; }
+    else {
+      setMode('code');
+      const html = await blob('index.html');
+      $('#code').value = html ? utf8FromB64(html) : '';
+      updateCodeInfo();
+    }
+    const icon = await blob('icon.png');
+    if (icon) { st.icon = icon; st.iconAuto = false; showIcon(); } else { st.iconAuto = true; refreshAutoIcon(); }
+    const hasSplash = files.some(f => f.path === 'splash.png');
+    if (hasSplash && cfg.splash_use_icon === false) {
+      setSplashMode('custom'); st.splashExisting = true;
+      const sp = await blob('splash.png'); if (sp) { st.splash = sp; $('#splashPrev').src = 'data:image/png;base64,' + sp; }
+    } else setSplashMode('icon');
+    st.extras = files.filter(f => !CORE.has(f.path)).map(f => ({ path: f.path, size: f.size, existing: true }));
+    renderExtras();
+    st.loadedSlug = slug;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    toast('تم تحميل «' + (cfg.app_name || slug) + '» للتعديل. رقم البناء زاد تلقائياً.', 'success');
+  } catch (e) { toast(e.message, 'error'); }
+}
+function resetForm(clearName = true) {
+  setMode('code');
+  $('#code').value = ''; updateCodeInfo();
+  $('#url').value = '';
+  if (clearName) { $('#appName').value = ''; $('#pkg').value = ''; }
+  $('#ver').value = '1.0'; $('#verCode').value = '1';
+  st.extras = []; st.removed.clear(); st.loadedSlug = null; st.pkgTouched = false; st.nameTouched = false;
+  st.splash = null; st.splashExisting = false; setSplashMode('icon');
+  st.iconAuto = true;
+  renderExtras(); validatePkg();
+}
+
+/* ---------- التهيئة ---------- */
+async function init() {
+  $$('img[data-ico]').forEach(img => { img.src = ICON[img.dataset.ico] || ''; });
+  $('#btnOpenHtml').innerHTML = S.file + 'فتح ملف HTML';
+  $('#btnOpenFolder').innerHTML = S.folder + 'استيراد مجلد مشروع';
+  $('#btnPreview').innerHTML = S.eye + 'معاينة';
+  $('#btnAddFiles').innerHTML = S.plus + 'إضافة ملفات (CSS، JS، صور)';
+  $('#btnIcon').innerHTML = S.image + 'رفع أيقونة';
+  $('#btnIconAuto').innerHTML = S.wand + 'توليد من الاسم';
+  $('#btnSplash').innerHTML = S.image + 'اختيار صورة';
+  $('#btnGenerate').innerHTML = S.rocket + 'توليد التطبيق';
+  $('#btnReload').innerHTML = S.refresh;
+  $('#btnNew').innerHTML = S.plus + 'تطبيق جديد';
+  $$('[data-close]').forEach(b => { b.innerHTML = S.close; });
+  let theme = 'dark';
+  try { theme = (JSON.parse(localStorage.getItem(KEY_PREFS) || '{}').theme) || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'); } catch (e) {}
+  applyTheme(theme);
+  showDur(); showSize();
+  loadConn(); renderConn(); suggestPkg();
+  st.icon = await makeAutoIcon(); showIcon();
+  if (conn.token) {
+    try { await verifyConn(); loadApps(); }
+    catch (e) { conn.ok = false; renderConn(); toast(e.message, 'error'); }
+  }
+}
+init();
+
+</script>
+</body>
+</html>
