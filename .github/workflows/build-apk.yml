@@ -12,9 +12,9 @@ on:
   workflow_dispatch:
     inputs:
       app:
-        description: 'اسم المجلد داخل apps/ (مثال: khaznati). اتركه فارغاً عند تحويل رابط'
+        description: 'اسم المجلد داخل apps/ (مثال: myapp). اتركه فارغاً عند تحويل رابط'
         required: false
-        default: 'khaznati'
+        default: ''
       url:
         description: 'أو رابط موقع لتحويله إلى تطبيق (يُقدَّم على المجلد)'
         required: false

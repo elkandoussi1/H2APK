@@ -53,7 +53,7 @@
 
 ## الطريقة 3: إعادة بناء تطبيق موجود
 
-**Actions** ← **بناء تطبيق APK** ← **Run workflow**، واكتب اسم المجلد (مثل `khaznati`) واترك خانة الرابط فارغة.
+**Actions** ← **بناء تطبيق APK** ← **Run workflow**، واكتب اسم المجلد (مثل `myapp`) واترك خانة الرابط فارغة.
 
 ---
 
@@ -61,10 +61,10 @@
 
 ```json
 {
-  "app_name": "خزنتي",
-  "package_name": "com.elkandoussi.khaznati",
-  "version": "3.0",
-  "version_code": 3,
+  "app_name": "تطبيقي",
+  "package_name": "com.elkandoussi.myapp",
+  "version": "1.0",
+  "version_code": 1,
   "theme_color": "#110D1D",
   "splash_enabled": true,
   "splash_color": "#110D1D",
@@ -98,7 +98,7 @@
 
 دون إعداد إضافي، تُوقَّع التطبيقات **بمفتاح التجربة** المضمَّن في المشروع. هذا يكفي للتجربة والاستعمال الشخصي، لكنه مفتاح عام يملكه الجميع.
 
-**لتطبيقات حساسة مثل «خزنتي» أو للنشر في متجر Play، استعمل مفتاحاً خاصاً بك:**
+**لتطبيقات حساسة (مثل مدير كلمات المرور) أو للنشر في متجر Play، استعمل مفتاحاً خاصاً بك:**
 
 1. أنشئ المفتاح مرة واحدة على جهازك (يتطلب Java):
    ```bash
@@ -142,7 +142,7 @@ export PATH="$PWD/tools/bin:$PATH"
 ويمكن البناء من سطر الأوامر دون الواجهة (والخادم يعمل):
 
 ```bash
-python3 scripts/ci_build.py apps/khaznati
+python3 scripts/ci_build.py apps/myapp
 python3 scripts/ci_build.py --url https://elkandoussi.com --name "القندوسي"
 ```
 

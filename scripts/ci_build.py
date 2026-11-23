@@ -4,7 +4,7 @@
 يُستعمل تلقائياً في GitHub Actions، ويمكن تشغيله على الجهاز أيضاً:
 
     ./h2apk &                                   # شغّل الخادم أولاً
-    python3 scripts/ci_build.py apps/khaznati   # مجلد تطبيق
+    python3 scripts/ci_build.py apps/myapp      # مجلد تطبيق
     python3 scripts/ci_build.py --url https://example.com --name "اسم التطبيق"
 
 كل مجلد داخل apps/ تطبيق مستقل:
