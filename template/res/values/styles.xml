@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <style name="AppTheme" parent="@android:style/Theme.NoTitleBar">
+    <item name="android:windowBackground">#FF0A0B0C</item>
+    <item name="android:windowNoTitle">true</item>
+    <item name="android:colorAccent">#FF0D0E0F</item>
+    <item name="android:colorControlActivated">#FF0D0E0F</item>
+  </style>
+</resources>

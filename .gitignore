@@ -36,3 +36,4 @@ server.log
 tools/bin/
 .env
 __pycache__/
+template/build/

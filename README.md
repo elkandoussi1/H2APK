@@ -1,5 +1,5 @@
-> **نسخة elkandoussi** من مشروع [HashShin/H2APK](https://github.com/HashShin/H2APK) (رخصة MIT) بعد توقف موقعه على الإنترنت، مع بناء تلقائي عبر GitHub Actions: ضع الكود في `apps/<اسم>/` أو شغّل «بناء تطبيق APK» برابط موقع، فيصلك ملف APK في **Releases**.
-> **الواجهة: https://elkandoussi1.github.io/H2APK/** · **دليل الاستخدام بالعربية: [README-AR.md](README-AR.md)**
+> **نسخة elkandoussi** من مشروع [HashShin/H2APK](https://github.com/HashShin/H2APK) (رخصة MIT) بعد توقف موقعه على الإنترنت.
+> **الواجهة: https://elkandoussi1.github.io/H2APK/** — تبني ملف APK وتوقّعه داخل المتصفح مباشرة، دون حساب أو خادم. · **دليل الاستخدام بالعربية: [README-AR.md](README-AR.md)**
 
 <p align="center"><img src="https://cdn.jsdelivr.net/gh/HashShin/H2APK@main/assets/images/banner.jpg" alt="H2APK Banner"></p>
 
