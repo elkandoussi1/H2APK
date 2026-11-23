@@ -1,0 +1,104 @@
+name: بناء تطبيق APK
+
+# طريقتان للاستعمال:
+# 1) ارفع مجلداً جديداً أو عدّل مجلداً داخل apps/ → يُبنى تطبيقه تلقائياً.
+# 2) من تبويب Actions → «بناء تطبيق APK» → Run workflow: اختر مجلداً أو ضع رابط موقع.
+# النتيجة: ملف APK في صفحة Releases وفي Artifacts.
+
+on:
+  push:
+    branches: [main]
+    paths: ['apps/**']
+  workflow_dispatch:
+    inputs:
+      app:
+        description: 'اسم المجلد داخل apps/ (مثال: khaznati). اتركه فارغاً عند تحويل رابط'
+        required: false
+        default: 'khaznati'
+      url:
+        description: 'أو رابط موقع لتحويله إلى تطبيق (يُقدَّم على المجلد)'
+        required: false
+        default: ''
+      app_name:
+        description: 'اسم التطبيق عند استعمال رابط'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-apk
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: جلب المستودع
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: تثبيت Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: تثبيت Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: false
+
+      - name: أدوات أندرويد (aapt2 وzipalign)
+        run: |
+          BT=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
+          echo "build-tools: $BT"
+          echo "$BT" >> "$GITHUB_PATH"
+
+      - name: بناء خادم H2APK
+        run: go build -o h2apk main.go
+
+      - name: تحويل التطبيقات
+        env:
+          IN_APP: ${{ github.event_name == 'workflow_dispatch' && inputs.app || '' }}
+          IN_URL: ${{ github.event_name == 'workflow_dispatch' && inputs.url || '' }}
+          IN_NAME: ${{ github.event_name == 'workflow_dispatch' && inputs.app_name || '' }}
+          BEFORE: ${{ github.event.before }}
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          PORT=8011 ./h2apk > server.log 2>&1 &
+          python3 scripts/ci_build.py
+
+      - name: سجل الخادم
+        if: always()
+        run: tail -n 120 server.log || true
+
+      - name: هل هناك ملفات؟
+        id: out
+        run: |
+          if ls dist/*.apk >/dev/null 2>&1; then echo "has=true" >> "$GITHUB_OUTPUT"; else echo "has=false" >> "$GITHUB_OUTPUT"; fi
+
+      - name: رفع الملفات (Artifacts)
+        if: steps.out.outputs.has == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: apk-${{ github.run_number }}
+          path: |
+            dist/*.apk
+            dist/*.aab
+
+      - name: نشر في Releases
+        if: steps.out.outputs.has == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          shopt -s nullglob
+          gh release create "build-${{ github.run_number }}" dist/*.apk dist/*.aab \
+            --title "$(cat dist/title.txt)" --notes-file dist/notes.md

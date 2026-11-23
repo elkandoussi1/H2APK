@@ -31,3 +31,8 @@ Thumbs.db
 docs/
 .qwen/
 testweb/
+# H2APK builds (elkandoussi)
+dist/
+server.log
+tools/bin/
+.env
